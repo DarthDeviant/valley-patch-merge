@@ -8,266 +8,91 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg: #0d0f14;
-    --surface: #13161d;
-    --surface2: #1a1e27;
-    --border: rgba(255,255,255,0.07);
-    --border-active: rgba(255,255,255,0.16);
-    --text: #e8eaf0;
-    --muted: #5a6070;
-    --accent: #f97316;
-    --accent-dim: rgba(249,115,22,0.12);
-    --accent-dim2: rgba(249,115,22,0.22);
-    --green: #22c55e;
-    --green-dim: rgba(34,197,94,0.12);
-    --blue: #60a5fa;
-    --blue-dim: rgba(96,165,250,0.12);
-    --red: #f87171;
-    --red-dim: rgba(248,113,113,0.12);
-    --mono: 'JetBrains Mono', monospace;
-    --display: 'Syne', sans-serif;
-    --radius: 8px;
-    --radius-lg: 12px;
+    --bg: #0d0f14; --surface: #13161d; --surface2: #1a1e27;
+    --border: rgba(255,255,255,0.07); --border-active: rgba(255,255,255,0.16);
+    --text: #e8eaf0; --muted: #5a6070;
+    --accent: #f97316; --accent-dim: rgba(249,115,22,0.12); --accent-dim2: rgba(249,115,22,0.22);
+    --green: #22c55e; --green-dim: rgba(34,197,94,0.12);
+    --blue: #60a5fa; --blue-dim: rgba(96,165,250,0.12);
+    --red: #f87171; --red-dim: rgba(248,113,113,0.12);
+    --mono: 'JetBrains Mono', monospace; --display: 'Syne', sans-serif;
+    --radius: 8px; --radius-lg: 12px;
   }
-
   html { scroll-behavior: smooth; }
-
   body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 13px;
-    min-height: 100vh;
-    line-height: 1.6;
-    overflow-x: hidden;
+    background: var(--bg); color: var(--text); font-family: var(--mono);
+    font-size: 13px; min-height: 100vh; line-height: 1.6; overflow-x: hidden;
   }
-
-  /* Grid lines bg */
   body::before {
-    content: '';
-    position: fixed; inset: 0; pointer-events: none; z-index: 0;
-    background-image:
-      linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
     background-size: 40px 40px;
   }
-
   .app { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
-
-  /* Header */
   .header { margin-bottom: 2.5rem; }
   .header-row { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; }
   .logo { font-family: var(--display); font-size: 28px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
   .logo span { color: var(--accent); }
-  .version-badge {
-    font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-    background: var(--accent-dim); color: var(--accent);
-    border: 1px solid rgba(249,115,22,0.3); border-radius: 4px;
-    padding: 2px 7px;
-  }
+  .version-badge { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(249,115,22,0.3); border-radius: 4px; padding: 2px 7px; }
   .tagline { font-size: 12px; color: var(--muted); }
-
-  /* Section label */
-  .sec-label {
-    font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
-    color: var(--muted); margin-bottom: 10px;
-    display: flex; align-items: center; gap: 8px;
-  }
+  .sec-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
   .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-  /* Drop zone */
-  .dropzone {
-    border: 1.5px dashed var(--border-active);
-    border-radius: var(--radius-lg);
-    background: var(--surface);
-    padding: 2.5rem 2rem;
-    text-align: center;
-    cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
-    position: relative;
-  }
-  .dropzone:hover, .dropzone.drag-over {
-    border-color: var(--accent);
-    background: var(--accent-dim);
-  }
+  .dropzone { border: 1.5px dashed var(--border-active); border-radius: var(--radius-lg); background: var(--surface); padding: 2.5rem 2rem; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; position: relative; }
+  .dropzone:hover, .dropzone.drag-over { border-color: var(--accent); background: var(--accent-dim); }
   .dropzone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
   .drop-icon { font-size: 32px; margin-bottom: 10px; display: block; }
   .drop-title { font-family: var(--display); font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
   .drop-sub { font-size: 11px; color: var(--muted); }
-
-  /* Patch list */
-  .patch-list { display: flex; flex-direction: column; gap: 6px; margin-top: 1rem; }
-
-  .patch-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 10px 12px;
-    display: grid;
-    grid-template-columns: 24px 1fr auto auto auto;
-    align-items: center;
-    gap: 10px;
-    cursor: default;
-    transition: border-color 0.15s, background 0.15s;
-    user-select: none;
-  }
+  .patch-list { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+  .patch-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; display: grid; grid-template-columns: 24px 1fr auto auto auto; align-items: center; gap: 10px; user-select: none; transition: border-color 0.15s, background 0.15s; }
   .patch-item.dragging { opacity: 0.4; }
   .patch-item.drag-target { border-color: var(--accent); background: var(--accent-dim); }
   .patch-item:hover { border-color: var(--border-active); }
-
   .drag-handle { color: var(--muted); cursor: grab; font-size: 16px; display: flex; align-items: center; justify-content: center; }
   .drag-handle:active { cursor: grabbing; }
-
   .patch-info { min-width: 0; }
   .patch-name { font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12px; }
-  .patch-meta { font-size: 10px; color: var(--muted); display: flex; gap: 8px; margin-top: 1px; flex-wrap: wrap; }
-
-  .patch-tag {
-    font-size: 9px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
-    padding: 1px 6px; border-radius: 3px;
-  }
+  .patch-meta { font-size: 10px; color: var(--muted); display: flex; gap: 8px; margin-top: 1px; flex-wrap: wrap; align-items: center; }
+  .patch-tag { font-size: 9px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; padding: 1px 6px; border-radius: 3px; }
   .tag-json { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(96,165,250,0.2); }
-  .tag-js { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(249,115,22,0.2); }
-  .tag-css { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
-
+  .tag-js   { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(249,115,22,0.2); }
+  .tag-css  { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+  .tag-html { background: rgba(168,85,247,0.1); color: #c084fc; border: 1px solid rgba(168,85,247,0.2); }
   .patch-content-flags { display: flex; gap: 4px; }
-
-  .move-btn, .del-btn {
-    background: transparent; border: 1px solid var(--border); color: var(--muted);
-    width: 28px; height: 28px; border-radius: 5px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; font-size: 13px;
-    transition: background 0.15s, color 0.15s, border-color 0.15s;
-    flex-shrink: 0;
-  }
+  .move-btn, .del-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); width: 28px; height: 28px; border-radius: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: background 0.15s, color 0.15s, border-color 0.15s; flex-shrink: 0; }
   .move-btn:hover { background: var(--surface2); color: var(--text); border-color: var(--border-active); }
+  .move-btn:disabled { opacity: 0.3; cursor: default; }
   .del-btn:hover { background: var(--red-dim); color: var(--red); border-color: rgba(248,113,113,0.3); }
-
-  /* Order numbers */
-  .order-num {
-    background: var(--surface2); border: 1px solid var(--border);
-    color: var(--muted); font-size: 9px; font-weight: 700;
-    width: 18px; height: 18px; border-radius: 3px;
-    display: flex; align-items: center; justify-content: center;
-  }
+  .order-num { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); font-size: 9px; font-weight: 700; width: 18px; height: 18px; border-radius: 3px; display: flex; align-items: center; justify-content: center; }
   .patch-item.drag-target .order-num { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
-
-  /* Output section */
-  .output-bar {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    gap: 8px;
-    align-items: center;
-    margin-top: 1rem;
-  }
-
+  .gap-section { margin-top: 2rem; }
+  .output-bar { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; margin-top: 1rem; }
   .filename-wrap { position: relative; }
-  .filename-input {
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 13px;
-    padding: 9px 12px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
+  .filename-input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-family: var(--mono); font-size: 13px; padding: 9px 12px; outline: none; transition: border-color 0.2s; }
   .filename-input:focus { border-color: var(--accent); }
-  .filename-ext {
-    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-    font-size: 12px; color: var(--muted); pointer-events: none;
-  }
-
-  .btn {
-    font-family: var(--mono); font-size: 12px; font-weight: 700;
-    padding: 9px 16px; border-radius: var(--radius); cursor: pointer;
-    border: 1px solid; transition: all 0.15s; white-space: nowrap;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .btn-preview {
-    background: transparent; color: var(--blue); border-color: rgba(96,165,250,0.3);
-  }
+  .filename-ext { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--muted); pointer-events: none; }
+  .btn { font-family: var(--mono); font-size: 12px; font-weight: 700; padding: 9px 16px; border-radius: var(--radius); cursor: pointer; border: 1px solid; transition: all 0.15s; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+  .btn-preview { background: transparent; color: var(--blue); border-color: rgba(96,165,250,0.3); }
   .btn-preview:hover { background: var(--blue-dim); border-color: var(--blue); }
-  .btn-merge {
-    background: var(--accent); color: #000; border-color: var(--accent);
-  }
+  .btn-merge { background: var(--accent); color: #000; border-color: var(--accent); }
   .btn-merge:hover { background: #ea6c0a; border-color: #ea6c0a; }
   .btn-merge:disabled { background: var(--surface2); color: var(--muted); border-color: var(--border); cursor: not-allowed; }
-  .btn-copy {
-    background: transparent; color: var(--green); border-color: rgba(34,197,94,0.3);
-    font-size: 11px; padding: 5px 10px;
-  }
+  .btn-copy { background: transparent; color: var(--green); border-color: rgba(34,197,94,0.3); font-size: 11px; padding: 5px 10px; }
   .btn-copy:hover { background: var(--green-dim); }
-
-  /* Preview */
-  .preview-wrap {
-    margin-top: 1rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-  }
-  .preview-header {
-    padding: 10px 14px;
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-  }
+  .preview-wrap { margin-top: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+  .preview-header { padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
   .preview-title { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
-  .preview-stats { display: flex; gap: 12px; }
   .preview-stat { font-size: 10px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
   .preview-stat strong { color: var(--text); }
-
-  .code-pre {
-    font-family: var(--mono);
-    font-size: 11.5px;
-    line-height: 1.7;
-    color: #c9d1d9;
-    padding: 1rem 1.25rem;
-    overflow-x: auto;
-    max-height: 420px;
-    overflow-y: auto;
-    white-space: pre;
-    tab-size: 2;
-    background: transparent;
-  }
-
-  /* Syntax highlight */
-  .tok-comment { color: #6e7681; }
-  .tok-keyword { color: #ff7b72; }
-  .tok-string { color: #a5d6ff; }
-  .tok-fn { color: #d2a8ff; }
-  .tok-num { color: #79c0ff; }
-
-  /* Empty state */
-  .empty-state {
-    text-align: center; padding: 2rem;
-    color: var(--muted); font-size: 12px;
-    border: 1px dashed var(--border); border-radius: var(--radius-lg);
-    background: var(--surface);
-  }
+  .code-pre { font-family: var(--mono); font-size: 11.5px; line-height: 1.7; color: #c9d1d9; padding: 1rem 1.25rem; overflow-x: auto; max-height: 420px; overflow-y: auto; white-space: pre; tab-size: 2; background: transparent; }
+  .empty-state { text-align: center; padding: 2rem; color: var(--muted); font-size: 12px; border: 1px dashed var(--border); border-radius: var(--radius-lg); background: var(--surface); margin-top: 10px; }
   .empty-icon { font-size: 28px; display: block; margin-bottom: 8px; }
-
-  /* Toast */
-  .toast {
-    position: fixed; bottom: 24px; right: 24px;
-    background: var(--surface2); border: 1px solid var(--green);
-    color: var(--green); font-family: var(--mono); font-size: 12px;
-    padding: 10px 16px; border-radius: var(--radius);
-    opacity: 0; transform: translateY(8px);
-    transition: opacity 0.25s, transform 0.25s;
-    pointer-events: none; z-index: 999;
-  }
+  .tok-comment { color: #6e7681; } .tok-keyword { color: #ff7b72; } .tok-string { color: #a5d6ff; } .tok-num { color: #79c0ff; }
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--surface2); border: 1px solid var(--green); color: var(--green); font-family: var(--mono); font-size: 12px; padding: 10px 16px; border-radius: var(--radius); opacity: 0; transform: translateY(8px); transition: opacity 0.25s, transform 0.25s; pointer-events: none; z-index: 999; }
   .toast.show { opacity: 1; transform: translateY(0); }
-
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border-active); border-radius: 3px; }
-
-  .gap-section { margin-top: 2rem; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--border-active); border-radius: 3px; }
 </style>
 </head>
 <body>
@@ -275,13 +100,12 @@
   <div class="header">
     <div class="header-row">
       <div class="logo">patch<span>.</span>merge</div>
-      <div class="version-badge">v1.0</div>
+      <div class="version-badge">v2.0</div>
     </div>
     <div class="tagline">// drag, order, and export your game patches into a single clean file</div>
   </div>
 
   <div class="sec-label">01 — load patches</div>
-
   <div class="dropzone" id="dropzone">
     <input type="file" id="file-input" multiple accept=".js,.json">
     <span class="drop-icon">⬡</span>
@@ -289,27 +113,20 @@
     <div class="drop-sub">Accepts .js and .json patches — multiple files at once</div>
   </div>
 
-  <div id="patch-list-wrap">
-    <div class="empty-state" id="empty-state" style="margin-top:10px">
-      <span class="empty-icon">◎</span>
-      No patches loaded yet. Drop files above.
-    </div>
-    <div class="patch-list" id="patch-list" style="display:none"></div>
+  <div id="empty-state" class="empty-state">
+    <span class="empty-icon">◎</span>No patches loaded yet. Drop files above.
   </div>
+  <div class="patch-list" id="patch-list" style="display:none"></div>
 
   <div class="gap-section">
     <div class="sec-label">02 — output</div>
     <div class="output-bar">
       <div class="filename-wrap">
-        <input type="text" class="filename-input" id="filename-input" value="update" placeholder="filename" style="padding-right: 28px">
+        <input type="text" class="filename-input" id="filename-input" value="update" placeholder="filename" style="padding-right:28px">
         <span class="filename-ext">.js</span>
       </div>
-      <button class="btn btn-preview" id="preview-btn" onclick="buildPreview()">
-        ⚡ preview
-      </button>
-      <button class="btn btn-merge" id="merge-btn" onclick="downloadMerged()" disabled>
-        ↓ export
-      </button>
+      <button class="btn btn-preview" onclick="buildPreview()">⚡ preview</button>
+      <button class="btn btn-merge" id="merge-btn" onclick="downloadMerged()" disabled>↓ export</button>
     </div>
   </div>
 
@@ -320,8 +137,8 @@
         <div class="preview-header">
           <div class="preview-title">output preview</div>
           <div style="display:flex;align-items:center;gap:8px">
-            <div class="preview-stats" id="preview-stats"></div>
-            <button class="btn btn-copy" id="copy-btn" onclick="copyOutput()">⎘ copy</button>
+            <div style="display:flex;gap:12px" id="preview-stats"></div>
+            <button class="btn btn-copy" onclick="copyOutput()">⎘ copy</button>
           </div>
         </div>
         <pre class="code-pre" id="code-output"></pre>
@@ -329,7 +146,6 @@
     </div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script>
@@ -342,284 +158,206 @@ const fileInput = document.getElementById('file-input');
 
 dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
 dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
-dropzone.addEventListener('drop', e => {
-  e.preventDefault();
-  dropzone.classList.remove('drag-over');
-  loadFiles(e.dataTransfer.files);
-});
-fileInput.addEventListener('change', e => loadFiles(e.target.files));
+dropzone.addEventListener('drop', e => { e.preventDefault(); dropzone.classList.remove('drag-over'); loadFiles(e.dataTransfer.files); });
+fileInput.addEventListener('change', e => { loadFiles(e.target.files); fileInput.value = ''; });
 
 function loadFiles(files) {
   Array.from(files).forEach(file => {
     const reader = new FileReader();
     reader.onload = ev => {
       const raw = ev.target.result;
-      const isJson = file.name.endsWith('.json');
+      const isJson = file.name.toLowerCase().endsWith('.json');
       let parsed = null;
       if (isJson) {
-        try { parsed = JSON.parse(raw); } catch(e) {
-          showToast('⚠ Could not parse ' + file.name, true); return;
-        }
+        try { parsed = JSON.parse(raw); }
+        catch(e) { showToast('Could not parse ' + file.name, true); return; }
       }
-      patches.push({
-        id: Date.now() + Math.random(),
-        name: file.name,
-        raw,
-        parsed,
-        isJson,
-        size: file.size
-      });
+      patches.push({ id: Date.now() + Math.random(), name: file.name, raw, parsed, isJson, size: file.size });
       renderList();
       showToast('+ ' + file.name);
     };
     reader.readAsText(file);
   });
-  // reset so same file can be re-added
-  fileInput.value = '';
 }
 
-// ── Render patch list ──────────────────────────────────────
+// ── Render ─────────────────────────────────────────────────
 function renderList() {
   const list = document.getElementById('patch-list');
   const empty = document.getElementById('empty-state');
-  const mergeBtn = document.getElementById('merge-btn');
-
-  if (!patches.length) {
-    list.style.display = 'none';
-    empty.style.display = '';
-    mergeBtn.disabled = true;
-    return;
-  }
-  list.style.display = 'flex';
-  empty.style.display = 'none';
-  mergeBtn.disabled = false;
-
+  document.getElementById('merge-btn').disabled = !patches.length;
+  if (!patches.length) { list.style.display = 'none'; empty.style.display = ''; return; }
+  list.style.display = 'flex'; empty.style.display = 'none';
   list.innerHTML = patches.map((p, i) => {
-    const flags = getPatchFlags(p);
     const sizeStr = p.size < 1024 ? p.size + ' B' : (p.size / 1024).toFixed(1) + ' KB';
-    return `
-    <div class="patch-item" draggable="true" data-idx="${i}"
-         ondragstart="dragStart(event,${i})"
-         ondragover="dragOver(event,${i})"
-         ondrop="dragDrop(event,${i})"
-         ondragend="dragEnd()">
-      <div class="drag-handle" title="Drag to reorder">
+    const flags = getFlags(p);
+    return `<div class="patch-item" draggable="true" data-idx="${i}"
+      ondragstart="dStart(event,${i})" ondragover="dOver(event,${i})"
+      ondrop="dDrop(event,${i})" ondragend="dEnd()">
+      <div class="drag-handle">
         <svg width="10" height="14" viewBox="0 0 10 14" fill="none">
-          <circle cx="3" cy="2.5" r="1.5" fill="currentColor"/>
-          <circle cx="7" cy="2.5" r="1.5" fill="currentColor"/>
-          <circle cx="3" cy="7" r="1.5" fill="currentColor"/>
-          <circle cx="7" cy="7" r="1.5" fill="currentColor"/>
-          <circle cx="3" cy="11.5" r="1.5" fill="currentColor"/>
-          <circle cx="7" cy="11.5" r="1.5" fill="currentColor"/>
+          <circle cx="3" cy="2.5" r="1.5" fill="currentColor"/><circle cx="7" cy="2.5" r="1.5" fill="currentColor"/>
+          <circle cx="3" cy="7" r="1.5" fill="currentColor"/><circle cx="7" cy="7" r="1.5" fill="currentColor"/>
+          <circle cx="3" cy="11.5" r="1.5" fill="currentColor"/><circle cx="7" cy="11.5" r="1.5" fill="currentColor"/>
         </svg>
       </div>
       <div class="patch-info">
-        <div class="patch-name">${escHtml(p.name)}</div>
+        <div class="patch-name">${esc(p.name)}</div>
         <div class="patch-meta">
           <span>${sizeStr}</span>
-          ${p.parsed && p.parsed.version ? `<span>v${escHtml(p.parsed.version)}</span>` : ''}
+          ${p.parsed && p.parsed.version ? `<span>v${esc(p.parsed.version)}</span>` : ''}
           <div class="patch-content-flags">${flags}</div>
         </div>
       </div>
       <div style="display:flex;gap:4px">
-        <button class="move-btn" onclick="moveUp(${i})" title="Move up" ${i===0 ? 'disabled style="opacity:0.3"' : ''}>↑</button>
-        <button class="move-btn" onclick="moveDown(${i})" title="Move down" ${i===patches.length-1 ? 'disabled style="opacity:0.3"' : ''}>↓</button>
+        <button class="move-btn" onclick="moveUp(${i})" ${i===0?'disabled':''}>↑</button>
+        <button class="move-btn" onclick="moveDown(${i})" ${i===patches.length-1?'disabled':''}>↓</button>
       </div>
-      <div class="order-num">${i + 1}</div>
-      <button class="del-btn" onclick="removePatch(${i})" title="Remove">✕</button>
+      <div class="order-num">${i+1}</div>
+      <button class="del-btn" onclick="removePatch(${i})">✕</button>
     </div>`;
   }).join('');
 }
 
-function getPatchFlags(p) {
-  const tags = [];
+function getFlags(p) {
   if (p.isJson) {
-    tags.push('<span class="patch-tag tag-json">JSON</span>');
+    const t = ['<span class="patch-tag tag-json">JSON</span>'];
     if (p.parsed) {
-      if (p.parsed.css) tags.push('<span class="patch-tag tag-css">CSS</span>');
-      if (p.parsed.js) tags.push('<span class="patch-tag tag-js">JS</span>');
-      if (p.parsed.html && p.parsed.html.length) tags.push('<span class="patch-tag" style="background:rgba(168,85,247,0.1);color:#c084fc;border:1px solid rgba(168,85,247,0.2)">HTML</span>');
+      if (p.parsed.css) t.push('<span class="patch-tag tag-css">CSS</span>');
+      if (p.parsed.js)  t.push('<span class="patch-tag tag-js">JS</span>');
+      if (p.parsed.html && p.parsed.html.length) t.push('<span class="patch-tag tag-html">HTML</span>');
     }
-  } else {
-    tags.push('<span class="patch-tag tag-js">JS</span>');
+    return t.join('');
   }
-  return tags.join('');
+  return '<span class="patch-tag tag-js">JS</span>';
 }
 
-function moveUp(i) { if (i > 0) { [patches[i-1], patches[i]] = [patches[i], patches[i-1]]; renderList(); } }
-function moveDown(i) { if (i < patches.length-1) { [patches[i], patches[i+1]] = [patches[i+1], patches[i]]; renderList(); } }
-function removePatch(i) { patches.splice(i, 1); renderList(); document.getElementById('preview-section').style.display='none'; }
+function moveUp(i)   { if (i > 0)                  { [patches[i-1],patches[i]]=[patches[i],patches[i-1]]; renderList(); } }
+function moveDown(i) { if (i < patches.length-1)   { [patches[i],patches[i+1]]=[patches[i+1],patches[i]]; renderList(); } }
+function removePatch(i) { patches.splice(i,1); renderList(); document.getElementById('preview-section').style.display='none'; }
 
-// ── Drag and drop reorder ──────────────────────────────────
-function dragStart(e, i) {
-  dragSrc = i;
-  e.currentTarget.classList.add('dragging');
-  e.dataTransfer.effectAllowed = 'move';
-}
-function dragOver(e, i) {
-  e.preventDefault();
-  document.querySelectorAll('.patch-item').forEach(el => el.classList.remove('drag-target'));
-  if (i !== dragSrc) document.querySelector(`[data-idx="${i}"]`).classList.add('drag-target');
-}
-function dragDrop(e, i) {
-  e.preventDefault();
-  if (dragSrc !== null && dragSrc !== i) {
-    const item = patches.splice(dragSrc, 1)[0];
-    patches.splice(i, 0, item);
-    renderList();
-  }
-}
-function dragEnd() {
-  dragSrc = null;
-  document.querySelectorAll('.patch-item').forEach(el => {
-    el.classList.remove('dragging', 'drag-target');
-  });
-}
+// ── Drag ───────────────────────────────────────────────────
+function dStart(e,i) { dragSrc=i; e.currentTarget.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; }
+function dOver(e,i)  { e.preventDefault(); document.querySelectorAll('.patch-item').forEach(el=>el.classList.remove('drag-target')); if(i!==dragSrc) document.querySelector(`[data-idx="${i}"]`).classList.add('drag-target'); }
+function dDrop(e,i)  { e.preventDefault(); if(dragSrc!==null&&dragSrc!==i){const item=patches.splice(dragSrc,1)[0];patches.splice(i,0,item);renderList();} }
+function dEnd()      { dragSrc=null; document.querySelectorAll('.patch-item').forEach(el=>el.classList.remove('dragging','drag-target')); }
 
-// ── Merge logic ────────────────────────────────────────────
+// ── Build merged output ─────────────────────────────────────
+// Strategy: replicate exactly what patcher.js does, but inlined.
+//   • CSS  → document.createElement('style'), content set via assignment
+//             Uses JSON.stringify() for the string value — 100% safe, no escaping bugs.
+//   • HTML → ops array via JSON.stringify() — equally safe.
+//   • JS   → emitted RAW (the js field from JSON is already valid JS).
+//             NOT wrapped in another IIFE — avoids double-wrapping existing IIFEs.
+//   • .js  → emitted as-is.
 function buildMerged() {
-  const cssChunks = [];
-  const htmlOps = [];
-  const jsChunks = [];
-
-  patches.forEach(p => {
-    if (p.isJson && p.parsed) {
-      if (p.parsed.css) cssChunks.push({ name: p.name, ver: p.parsed.version, css: p.parsed.css });
-      if (p.parsed.html && p.parsed.html.length) htmlOps.push({ name: p.name, ops: p.parsed.html });
-      if (p.parsed.js) jsChunks.push({ name: p.name, ver: p.parsed.version, js: p.parsed.js });
-    } else {
-      jsChunks.push({ name: p.name, ver: null, js: p.raw });
-    }
-  });
-
-  const filename = (document.getElementById('filename-input').value.trim() || 'update').replace(/\.js$/, '');
-  const now = new Date().toISOString().slice(0, 10);
-  const patchNames = patches.map(p => p.name).join(', ');
+  const filename = (document.getElementById('filename-input').value.trim() || 'update').replace(/\.js$/,'');
+  const now = new Date().toISOString().slice(0,10);
+  const names = patches.map(p=>p.name).join(', ');
 
   let out = '';
-
-  // Header comment
-  out += `/* ═════════════════════════════════════════════════════════\n`;
+  out += `/* ${'═'.repeat(57)}\n`;
   out += `   ${filename}.js — Merged Patch Bundle\n`;
   out += `   Generated : ${now}\n`;
-  out += `   Sources   : ${patchNames}\n`;
-  out += `   ═════════════════════════════════════════════════════════ */\n`;
-  out += `(function () {\n`;
-  out += `  'use strict';\n\n`;
+  out += `   Sources   : ${names}\n`;
+  out += `   ${'═'.repeat(57)} */\n`;
 
-  // CSS injection
-  if (cssChunks.length) {
-    out += `  /* ── CSS Patches ──────────────────────────────────────── */\n`;
-    out += `  var _css = [\n`;
-    cssChunks.forEach(c => {
-      const escaped = c.css.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
-      out += `    /* ${c.name}${c.ver ? ' v' + c.ver : ''} */\n`;
-      out += `    \`${escaped}\`,\n`;
-    });
-    out += `  ].join('\\n');\n`;
-    out += `  var _styleEl = document.createElement('style');\n`;
-    out += `  _styleEl.setAttribute('data-merged-patch', '${filename}');\n`;
-    out += `  _styleEl.textContent = _css;\n`;
-    out += `  document.head.appendChild(_styleEl);\n\n`;
+  for (const p of patches) {
+    out += `\n/* ${'─'.repeat(20)} ${p.name}${p.parsed&&p.parsed.version?' v'+p.parsed.version:''} ${'─'.repeat(20)} */\n`;
+
+    if (p.isJson && p.parsed) {
+      const { css, html, js } = p.parsed;
+
+      // 1. CSS — safe embed via JSON.stringify
+      if (css) {
+        out += `(function(){\n`;
+        out += `  var _s = document.createElement('style');\n`;
+        out += `  _s.setAttribute('data-patch', ${JSON.stringify(p.name)});\n`;
+        // JSON.stringify produces a valid JS string literal with all escapes handled
+        out += `  _s.textContent = ${JSON.stringify(css)};\n`;
+        out += `  document.head.appendChild(_s);\n`;
+        out += `})();\n`;
+      }
+
+      // 2. HTML ops — safe embed via JSON.stringify on the whole array
+      if (html && html.length) {
+        out += `(function(){\n`;
+        out += `  var ops = ${JSON.stringify(html, null, 2)};\n`;
+        out += `  ops.forEach(function(op){\n`;
+        out += `    var el = document.querySelector(op.selector);\n`;
+        out += `    if (!el) { console.warn('[${filename}] selector not found:', op.selector); return; }\n`;
+        out += `    var pos = op.position || 'afterend';\n`;
+        out += `    if      (op.action === 'replace')   el.outerHTML = op.content;\n`;
+        out += `    else if (op.action === 'innerHTML')  el.innerHTML = op.content;\n`;
+        out += `    else if (op.action === 'insert')     el.insertAdjacentHTML(pos, op.content);\n`;
+        out += `    else if (op.action === 'remove')     el.remove();\n`;
+        out += `    else if (op.action === 'attr') { var kv=op.content.split('='); el.setAttribute(kv[0].trim(),kv[1].trim()); }\n`;
+        out += `  });\n`;
+        out += `})();\n`;
+      }
+
+      // 3. JS — emit raw, no wrapping, no indentation changes
+      //    The js field is already valid JS (IIFEs, etc.) — just write it out.
+      if (js) {
+        out += js;
+        if (!js.endsWith('\n')) out += '\n';
+      }
+
+    } else {
+      // Raw .js file — emit as-is, zero modification
+      out += p.raw;
+      if (!p.raw.endsWith('\n')) out += '\n';
+    }
   }
 
-  // HTML patches
-  if (htmlOps.length) {
-    out += `  /* ── HTML Patches ─────────────────────────────────────── */\n`;
-    out += `  (function applyHtmlPatches() {\n`;
-    out += `    var ops = [\n`;
-    htmlOps.forEach(h => {
-      h.ops.forEach(op => {
-        const escaped = JSON.stringify(op);
-        out += `      ${escaped},  /* from ${h.name} */\n`;
-      });
-    });
-    out += `    ];\n`;
-    out += `    ops.forEach(function(op) {\n`;
-    out += `      var el = document.querySelector(op.selector);\n`;
-    out += `      if (!el) { console.warn('[${filename}] Not found:', op.selector); return; }\n`;
-    out += `      var action = op.action, content = op.content, pos = op.position || 'afterend';\n`;
-    out += `      if (action === 'replace')    el.outerHTML = content;\n`;
-    out += `      else if (action === 'innerHTML') el.innerHTML = content;\n`;
-    out += `      else if (action === 'insert')    el.insertAdjacentHTML(pos, content);\n`;
-    out += `      else if (action === 'remove')    el.remove();\n`;
-    out += `      else if (action === 'attr')  { var p = content.split('='); el.setAttribute(p[0].trim(), p[1].trim()); }\n`;
-    out += `    });\n`;
-    out += `  })();\n\n`;
-  }
-
-  // JS patches — each wrapped in its own block with a label
-  if (jsChunks.length) {
-    out += `  /* ── JS Patches ───────────────────────────────────────── */\n`;
-    jsChunks.forEach((c, idx) => {
-      out += `\n  /* [ ${idx + 1} / ${jsChunks.length} ] ${c.name}${c.ver ? ' v' + c.ver : ''} */\n`;
-      // Indent the chunk body
-      const lines = c.js.split('\n');
-      out += lines.map(l => '  ' + l).join('\n');
-      out += '\n';
-    });
-  }
-
-  out += `\n})();\n`;
   return out;
 }
 
 // ── Preview ────────────────────────────────────────────────
 function buildPreview() {
-  if (!patches.length) { showToast('⚠ No patches loaded', true); return; }
+  if (!patches.length) { showToast('No patches loaded', true); return; }
   const merged = buildMerged();
   const lines = merged.split('\n').length;
-  const bytes = new Blob([merged]).size;
-  const sizeStr = bytes < 1024 ? bytes + ' B' : (bytes / 1024).toFixed(1) + ' KB';
-
-  document.getElementById('preview-stats').innerHTML = `
-    <div class="preview-stat"><strong>${patches.length}</strong> sources</div>
-    <div class="preview-stat"><strong>${lines}</strong> lines</div>
-    <div class="preview-stat"><strong>${sizeStr}</strong></div>
-  `;
-
-  document.getElementById('code-output').innerHTML = syntaxHighlight(merged);
+  const bytes = new TextEncoder().encode(merged).length;
+  const sizeStr = bytes < 1024 ? bytes + ' B' : (bytes/1024).toFixed(1) + ' KB';
+  document.getElementById('preview-stats').innerHTML =
+    `<div class="preview-stat"><strong>${patches.length}</strong>&nbsp;sources</div>
+     <div class="preview-stat"><strong>${lines}</strong>&nbsp;lines</div>
+     <div class="preview-stat"><strong>${sizeStr}</strong></div>`;
+  document.getElementById('code-output').innerHTML = highlight(merged);
   document.getElementById('preview-section').style.display = '';
-  document.getElementById('preview-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('preview-section').scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
 // ── Download ───────────────────────────────────────────────
 function downloadMerged() {
   if (!patches.length) return;
   const merged = buildMerged();
-  const filename = (document.getElementById('filename-input').value.trim() || 'update').replace(/\.js$/, '') + '.js';
-  const blob = new Blob([merged], { type: 'text/javascript' });
+  const filename = (document.getElementById('filename-input').value.trim() || 'update').replace(/\.js$/,'') + '.js';
+  const blob = new Blob([merged], {type:'text/javascript'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = filename;
-  a.click();
+  a.href = url; a.download = filename; a.click();
   URL.revokeObjectURL(url);
-  showToast('↓ Downloaded ' + filename);
+  showToast('Downloaded ' + filename);
   buildPreview();
 }
 
-// ── Copy ───────────────────────────────────────────────────
 function copyOutput() {
-  const text = document.getElementById('code-output').textContent;
-  navigator.clipboard.writeText(text).then(() => showToast('⎘ Copied to clipboard'));
+  navigator.clipboard.writeText(document.getElementById('code-output').textContent)
+    .then(() => showToast('Copied to clipboard'));
 }
 
 // ── Minimal syntax highlight ───────────────────────────────
-function syntaxHighlight(code) {
-  // Very lightweight tokenizer (no full parser, just cosmetic)
-  return escHtml(code)
+function highlight(code) {
+  return esc(code)
     .replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="tok-comment">$1</span>')
-    .replace(/\/\/.*/g, '<span class="tok-comment">$&</span>')
-    .replace(/\b(function|var|let|const|return|if|else|typeof|new|this|null|undefined|true|false|for|forEach|try|catch|setTimeout|clearInterval|setInterval)\b/g,
+    .replace(/\/\/.*/g, m => m.startsWith('/*') ? m : `<span class="tok-comment">${m}</span>`)
+    .replace(/\b(function|var|let|const|return|if|else|typeof|new|this|null|undefined|true|false|for|forEach|try|catch|setTimeout|setInterval|clearInterval)\b/g,
       '<span class="tok-keyword">$1</span>')
-    .replace(/(`[^`]*`)/g, '<span class="tok-string">$1</span>')
-    .replace(/('[^']*'|"[^"]*")/g, '<span class="tok-string">$1</span>')
+    .replace(/("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`)/g, '<span class="tok-string">$1</span>')
     .replace(/\b(\d+(\.\d+)?)\b/g, '<span class="tok-num">$1</span>');
 }
-
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 // ── Toast ──────────────────────────────────────────────────
 let toastTimer;
