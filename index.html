@@ -4,306 +4,362 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Patch Merger</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #0d0f14; --surface: #13161d; --surface2: #1a1e27;
-    --border: rgba(255,255,255,0.07); --border-active: rgba(255,255,255,0.16);
-    --text: #e8eaf0; --muted: #5a6070;
-    --accent: #f97316; --accent-dim: rgba(249,115,22,0.12); --accent-dim2: rgba(249,115,22,0.22);
-    --green: #22c55e; --green-dim: rgba(34,197,94,0.12);
-    --blue: #60a5fa; --blue-dim: rgba(96,165,250,0.12);
-    --red: #f87171; --red-dim: rgba(248,113,113,0.12);
-    --mono: 'JetBrains Mono', monospace; --display: 'Syne', sans-serif;
-    --radius: 8px; --radius-lg: 12px;
-  }
-  html { scroll-behavior: smooth; }
-  body {
-    background: var(--bg); color: var(--text); font-family: var(--mono);
-    font-size: 13px; min-height: 100vh; line-height: 1.6; overflow-x: hidden;
-  }
-  body::before {
-    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
-    background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
-    background-size: 40px 40px;
-  }
-  .app { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
-  .header { margin-bottom: 2.5rem; }
-  .header-row { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; }
-  .logo { font-family: var(--display); font-size: 28px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
-  .logo span { color: var(--accent); }
-  .version-badge { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(249,115,22,0.3); border-radius: 4px; padding: 2px 7px; }
-  .tagline { font-size: 12px; color: var(--muted); }
-  .sec-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-  .dropzone { border: 1.5px dashed var(--border-active); border-radius: var(--radius-lg); background: var(--surface); padding: 2.5rem 2rem; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; position: relative; }
-  .dropzone:hover, .dropzone.drag-over { border-color: var(--accent); background: var(--accent-dim); }
-  .dropzone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-  .drop-icon { font-size: 32px; margin-bottom: 10px; display: block; }
-  .drop-title { font-family: var(--display); font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-  .drop-sub { font-size: 11px; color: var(--muted); }
-  .patch-list { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
-  .patch-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; display: grid; grid-template-columns: 24px 1fr auto auto auto; align-items: center; gap: 10px; user-select: none; transition: border-color 0.15s, background 0.15s; }
-  .patch-item.dragging { opacity: 0.4; }
-  .patch-item.drag-target { border-color: var(--accent); background: var(--accent-dim); }
-  .patch-item:hover { border-color: var(--border-active); }
-  .drag-handle { color: var(--muted); cursor: grab; font-size: 16px; display: flex; align-items: center; justify-content: center; }
-  .drag-handle:active { cursor: grabbing; }
-  .patch-info { min-width: 0; }
-  .patch-name { font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12px; }
-  .patch-meta { font-size: 10px; color: var(--muted); display: flex; gap: 8px; margin-top: 1px; flex-wrap: wrap; align-items: center; }
-  .patch-tag { font-size: 9px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; padding: 1px 6px; border-radius: 3px; }
-  .tag-json { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(96,165,250,0.2); }
-  .tag-js   { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(249,115,22,0.2); }
-  .tag-css  { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
-  .tag-html { background: rgba(168,85,247,0.1); color: #c084fc; border: 1px solid rgba(168,85,247,0.2); }
-  .patch-content-flags { display: flex; gap: 4px; }
-  .move-btn, .del-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); width: 28px; height: 28px; border-radius: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: background 0.15s, color 0.15s, border-color 0.15s; flex-shrink: 0; }
-  .move-btn:hover { background: var(--surface2); color: var(--text); border-color: var(--border-active); }
-  .move-btn:disabled { opacity: 0.3; cursor: default; }
-  .del-btn:hover { background: var(--red-dim); color: var(--red); border-color: rgba(248,113,113,0.3); }
-  .order-num { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); font-size: 9px; font-weight: 700; width: 18px; height: 18px; border-radius: 3px; display: flex; align-items: center; justify-content: center; }
-  .patch-item.drag-target .order-num { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
-  .gap-section { margin-top: 2rem; }
-  .output-bar { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; margin-top: 1rem; }
-  .filename-wrap { position: relative; }
-  .filename-input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-family: var(--mono); font-size: 13px; padding: 9px 12px; outline: none; transition: border-color 0.2s; }
-  .filename-input:focus { border-color: var(--accent); }
-  .filename-ext { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--muted); pointer-events: none; }
-  .btn { font-family: var(--mono); font-size: 12px; font-weight: 700; padding: 9px 16px; border-radius: var(--radius); cursor: pointer; border: 1px solid; transition: all 0.15s; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
-  .btn-preview { background: transparent; color: var(--blue); border-color: rgba(96,165,250,0.3); }
-  .btn-preview:hover { background: var(--blue-dim); border-color: var(--blue); }
-  .btn-merge { background: var(--accent); color: #000; border-color: var(--accent); }
-  .btn-merge:hover { background: #ea6c0a; border-color: #ea6c0a; }
-  .btn-merge:disabled { background: var(--surface2); color: var(--muted); border-color: var(--border); cursor: not-allowed; }
-  .btn-copy { background: transparent; color: var(--green); border-color: rgba(34,197,94,0.3); font-size: 11px; padding: 5px 10px; }
-  .btn-copy:hover { background: var(--green-dim); }
-  .preview-wrap { margin-top: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
-  .preview-header { padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-  .preview-title { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
-  .preview-stat { font-size: 10px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
-  .preview-stat strong { color: var(--text); }
-  .code-pre { font-family: var(--mono); font-size: 11.5px; line-height: 1.7; color: #c9d1d9; padding: 1rem 1.25rem; overflow-x: auto; max-height: 420px; overflow-y: auto; white-space: pre; tab-size: 2; background: transparent; }
-  .empty-state { text-align: center; padding: 2rem; color: var(--muted); font-size: 12px; border: 1px dashed var(--border); border-radius: var(--radius-lg); background: var(--surface); margin-top: 10px; }
-  .empty-icon { font-size: 28px; display: block; margin-bottom: 8px; }
-  .tok-comment { color: #6e7681; } .tok-keyword { color: #ff7b72; } .tok-string { color: #a5d6ff; } .tok-num { color: #79c0ff; }
-  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--surface2); border: 1px solid var(--green); color: var(--green); font-family: var(--mono); font-size: 12px; padding: 10px 16px; border-radius: var(--radius); opacity: 0; transform: translateY(8px); transition: opacity 0.25s, transform 0.25s; pointer-events: none; z-index: 999; }
-  .toast.show { opacity: 1; transform: translateY(0); }
-  ::-webkit-scrollbar { width: 6px; height: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--border-active); border-radius: 3px; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0f14;--surf:#13161d;--surf2:#1a1e27;
+  --br:rgba(255,255,255,0.08);--br2:rgba(255,255,255,0.18);
+  --tx:#e8eaf0;--mu:#5a6070;
+  --acc:#f97316;--acc-d:rgba(249,115,22,0.13);
+  --grn:#22c55e;--grn-d:rgba(34,197,94,0.13);
+  --blu:#60a5fa;--blu-d:rgba(96,165,250,0.13);
+  --red:#f87171;--red-d:rgba(248,113,113,0.13);
+  --pur:#c084fc;--pur-d:rgba(192,132,252,0.13);
+  --r:8px;--r2:12px;
+  --mono:ui-monospace,'Cascadia Code','Consolas','Menlo',monospace;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font-family:var(--mono);font-size:13px;min-height:100vh;line-height:1.6}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;
+  background:linear-gradient(rgba(255,255,255,0.016) 1px,transparent 1px),
+             linear-gradient(90deg,rgba(255,255,255,0.016) 1px,transparent 1px);
+  background-size:44px 44px}
+
+.wrap{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:2rem 1.5rem 5rem}
+
+/* header */
+.logo{font-size:26px;font-weight:800;letter-spacing:-1px;margin-bottom:4px}
+.logo em{color:var(--acc);font-style:normal}
+.sub{font-size:11px;color:var(--mu);margin-bottom:2.5rem}
+
+/* section label */
+.lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--mu);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.lbl::after{content:'';flex:1;height:1px;background:var(--br)}
+
+/* drop zone */
+.drop{border:1.5px dashed var(--br2);border-radius:var(--r2);background:var(--surf);
+  padding:2.5rem 2rem;text-align:center;cursor:pointer;
+  transition:border-color .2s,background .2s;position:relative}
+.drop input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.drop:hover,.drop.over{border-color:var(--acc);background:var(--acc-d)}
+.drop-ico{font-size:28px;display:block;margin-bottom:8px}
+.drop-t{font-size:15px;font-weight:700;color:var(--tx);margin-bottom:4px}
+.drop-s{font-size:11px;color:var(--mu)}
+
+/* empty */
+.empty{text-align:center;padding:2rem;color:var(--mu);font-size:12px;
+  border:1px dashed var(--br);border-radius:var(--r2);background:var(--surf);margin-top:10px}
+
+/* list */
+.list{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+
+.item{background:var(--surf);border:1px solid var(--br);border-radius:var(--r);
+  padding:10px 12px;display:grid;grid-template-columns:20px 1fr auto auto;
+  align-items:center;gap:10px;user-select:none;transition:border-color .15s,background .15s}
+.item:hover{border-color:var(--br2)}
+.item.dragging{opacity:.35}
+.item.over{border-color:var(--acc);background:var(--acc-d)}
+
+.grip{color:var(--mu);cursor:grab;display:flex;align-items:center}
+.grip:active{cursor:grabbing}
+
+.info{min-width:0}
+.name{font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meta{font-size:10px;color:var(--mu);display:flex;gap:8px;align-items:center;margin-top:2px;flex-wrap:wrap}
+
+.tag{font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:1px 6px;border-radius:3px}
+.t-json{background:var(--blu-d);color:var(--blu);border:1px solid rgba(96,165,250,.2)}
+.t-js  {background:var(--acc-d);color:var(--acc);border:1px solid rgba(249,115,22,.2)}
+.t-css {background:var(--grn-d);color:var(--grn);border:1px solid rgba(34,197,94,.2)}
+.t-html{background:var(--pur-d);color:var(--pur);border:1px solid rgba(192,132,252,.2)}
+
+.btns{display:flex;gap:4px}
+.ib,.db{background:transparent;border:1px solid var(--br);color:var(--mu);
+  width:28px;height:28px;border-radius:5px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:13px;
+  transition:background .15s,color .15s,border-color .15s}
+.ib:hover{background:var(--surf2);color:var(--tx);border-color:var(--br2)}
+.ib:disabled{opacity:.28;cursor:default}
+.db:hover{background:var(--red-d);color:var(--red);border-color:rgba(248,113,113,.3)}
+
+/* output bar */
+.out-bar{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;margin-top:10px}
+.fn-wrap{position:relative}
+.fn-in{width:100%;background:var(--surf);border:1px solid var(--br);border-radius:var(--r);
+  color:var(--tx);font-family:var(--mono);font-size:13px;padding:9px 36px 9px 12px;outline:none;transition:border-color .2s}
+.fn-in:focus{border-color:var(--acc)}
+.fn-ext{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--mu);pointer-events:none}
+
+.btn{font-family:var(--mono);font-size:12px;font-weight:700;padding:9px 16px;
+  border-radius:var(--r);cursor:pointer;border:1px solid;transition:all .15s;
+  white-space:nowrap;display:flex;align-items:center;gap:6px}
+.b-pre{background:transparent;color:var(--blu);border-color:rgba(96,165,250,.3)}
+.b-pre:hover{background:var(--blu-d);border-color:var(--blu)}
+.b-exp{background:var(--acc);color:#000;border-color:var(--acc);font-weight:800}
+.b-exp:hover{background:#e8680a;border-color:#e8680a}
+.b-exp:disabled{background:var(--surf2);color:var(--mu);border-color:var(--br);cursor:not-allowed}
+.b-cpy{background:transparent;color:var(--grn);border-color:rgba(34,197,94,.3);font-size:11px;padding:5px 10px}
+.b-cpy:hover{background:var(--grn-d)}
+
+/* preview */
+.prev-wrap{margin-top:10px;background:var(--surf);border:1px solid var(--br);border-radius:var(--r2);overflow:hidden}
+.prev-hd{padding:9px 14px;border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between}
+.prev-lbl{font-size:10px;font-weight:700;color:var(--mu);letter-spacing:1px;text-transform:uppercase}
+.stats{display:flex;gap:12px}
+.stat{font-size:10px;color:var(--mu)}
+.stat strong{color:var(--tx)}
+.code{font-family:var(--mono);font-size:11.5px;line-height:1.65;color:#c9d1d9;
+  padding:1rem 1.25rem;overflow:auto;max-height:440px;white-space:pre;background:transparent}
+
+.gap{margin-top:2rem}
+
+/* toast */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--surf2);
+  border:1px solid;font-family:var(--mono);font-size:12px;
+  padding:9px 15px;border-radius:var(--r);opacity:0;transform:translateY(6px);
+  transition:opacity .2s,transform .2s;pointer-events:none;z-index:99}
+.toast.on{opacity:1;transform:none}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--br2);border-radius:3px}
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="header">
-    <div class="header-row">
-      <div class="logo">patch<span>.</span>merge</div>
-      <div class="version-badge">v2.0</div>
-    </div>
-    <div class="tagline">// drag, order, and export your game patches into a single clean file</div>
+<div class="wrap">
+
+  <div class="logo">patch<em>.</em>merge <span style="font-size:11px;font-weight:400;color:var(--mu)">v3</span></div>
+  <div class="sub">// load patches, set order, export as one clean .js file</div>
+
+  <div class="lbl">01 — load patches</div>
+  <div class="drop" id="dz">
+    <input type="file" id="fi" multiple accept=".js,.json">
+    <span class="drop-ico">⬡</span>
+    <div class="drop-t">Drop patch files here</div>
+    <div class="drop-s">Accepts .js and .json — drop multiple at once</div>
   </div>
 
-  <div class="sec-label">01 — load patches</div>
-  <div class="dropzone" id="dropzone">
-    <input type="file" id="file-input" multiple accept=".js,.json">
-    <span class="drop-icon">⬡</span>
-    <div class="drop-title">Drop patch files here</div>
-    <div class="drop-sub">Accepts .js and .json patches — multiple files at once</div>
-  </div>
+  <div class="empty" id="emp">No patches loaded yet.</div>
+  <div class="list" id="lst" style="display:none"></div>
 
-  <div id="empty-state" class="empty-state">
-    <span class="empty-icon">◎</span>No patches loaded yet. Drop files above.
-  </div>
-  <div class="patch-list" id="patch-list" style="display:none"></div>
-
-  <div class="gap-section">
-    <div class="sec-label">02 — output</div>
-    <div class="output-bar">
-      <div class="filename-wrap">
-        <input type="text" class="filename-input" id="filename-input" value="update" placeholder="filename" style="padding-right:28px">
-        <span class="filename-ext">.js</span>
+  <div class="gap">
+    <div class="lbl">02 — output filename</div>
+    <div class="out-bar">
+      <div class="fn-wrap">
+        <input class="fn-in" type="text" id="fn" value="update" placeholder="filename">
+        <span class="fn-ext">.js</span>
       </div>
-      <button class="btn btn-preview" onclick="buildPreview()">⚡ preview</button>
-      <button class="btn btn-merge" id="merge-btn" onclick="downloadMerged()" disabled>↓ export</button>
+      <button class="btn b-pre" onclick="preview()">⚡ preview</button>
+      <button class="btn b-exp" id="expbtn" onclick="doExport()" disabled>↓ export</button>
     </div>
   </div>
 
-  <div id="preview-section" style="display:none">
-    <div class="gap-section">
-      <div class="sec-label">03 — merged output</div>
-      <div class="preview-wrap">
-        <div class="preview-header">
-          <div class="preview-title">output preview</div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <div style="display:flex;gap:12px" id="preview-stats"></div>
-            <button class="btn btn-copy" onclick="copyOutput()">⎘ copy</button>
+  <div id="prevsec" style="display:none">
+    <div class="gap">
+      <div class="lbl">03 — merged output</div>
+      <div class="prev-wrap">
+        <div class="prev-hd">
+          <div class="prev-lbl">preview</div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="stats" id="stats"></div>
+            <button class="btn b-cpy" onclick="doCopy()">⎘ copy</button>
           </div>
         </div>
-        <pre class="code-pre" id="code-output"></pre>
+        <pre class="code" id="out"></pre>
       </div>
     </div>
   </div>
+
 </div>
-<div class="toast" id="toast"></div>
+<div class="toast" id="tst"></div>
 
 <script>
+// ─────────────────────────────────────────────
+// State
+// ─────────────────────────────────────────────
 const patches = [];
 let dragSrc = null;
+let lastMerged = '';
 
-// ── File loading ───────────────────────────────────────────
-const dropzone = document.getElementById('dropzone');
-const fileInput = document.getElementById('file-input');
+// ─────────────────────────────────────────────
+// Drop zone
+// ─────────────────────────────────────────────
+const dz = document.getElementById('dz');
+const fi = document.getElementById('fi');
 
-dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
-dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
-dropzone.addEventListener('drop', e => { e.preventDefault(); dropzone.classList.remove('drag-over'); loadFiles(e.dataTransfer.files); });
-fileInput.addEventListener('change', e => { loadFiles(e.target.files); fileInput.value = ''; });
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('over'); loadFiles(e.dataTransfer.files); });
+fi.addEventListener('change', () => { loadFiles(fi.files); fi.value = ''; });
 
 function loadFiles(files) {
   Array.from(files).forEach(file => {
-    const reader = new FileReader();
-    reader.onload = ev => {
+    const r = new FileReader();
+    r.onload = ev => {
       const raw = ev.target.result;
       const isJson = file.name.toLowerCase().endsWith('.json');
       let parsed = null;
       if (isJson) {
         try { parsed = JSON.parse(raw); }
-        catch(e) { showToast('Could not parse ' + file.name, true); return; }
+        catch { toast('Cannot parse ' + file.name, 1); return; }
       }
       patches.push({ id: Date.now() + Math.random(), name: file.name, raw, parsed, isJson, size: file.size });
-      renderList();
-      showToast('+ ' + file.name);
+      render();
+      toast('+ ' + file.name);
     };
-    reader.readAsText(file);
+    r.readAsText(file);
   });
 }
 
-// ── Render ─────────────────────────────────────────────────
-function renderList() {
-  const list = document.getElementById('patch-list');
-  const empty = document.getElementById('empty-state');
-  document.getElementById('merge-btn').disabled = !patches.length;
-  if (!patches.length) { list.style.display = 'none'; empty.style.display = ''; return; }
-  list.style.display = 'flex'; empty.style.display = 'none';
-  list.innerHTML = patches.map((p, i) => {
-    const sizeStr = p.size < 1024 ? p.size + ' B' : (p.size / 1024).toFixed(1) + ' KB';
-    const flags = getFlags(p);
-    return `<div class="patch-item" draggable="true" data-idx="${i}"
-      ondragstart="dStart(event,${i})" ondragover="dOver(event,${i})"
-      ondrop="dDrop(event,${i})" ondragend="dEnd()">
-      <div class="drag-handle">
-        <svg width="10" height="14" viewBox="0 0 10 14" fill="none">
-          <circle cx="3" cy="2.5" r="1.5" fill="currentColor"/><circle cx="7" cy="2.5" r="1.5" fill="currentColor"/>
-          <circle cx="3" cy="7" r="1.5" fill="currentColor"/><circle cx="7" cy="7" r="1.5" fill="currentColor"/>
-          <circle cx="3" cy="11.5" r="1.5" fill="currentColor"/><circle cx="7" cy="11.5" r="1.5" fill="currentColor"/>
-        </svg>
+// ─────────────────────────────────────────────
+// Render list
+// ─────────────────────────────────────────────
+function render() {
+  const lst = document.getElementById('lst');
+  const emp = document.getElementById('emp');
+  document.getElementById('expbtn').disabled = patches.length === 0;
+
+  if (!patches.length) { lst.style.display = 'none'; emp.style.display = ''; return; }
+  lst.style.display = 'flex'; emp.style.display = 'none';
+
+  lst.innerHTML = patches.map((p, i) => {
+    const kb = p.size < 1024 ? p.size + ' B' : (p.size / 1024).toFixed(1) + ' KB';
+    const tags = getTags(p);
+    return `
+    <div class="item" draggable="true" data-i="${i}"
+         ondragstart="ds(event,${i})" ondragover="dov(event,${i})"
+         ondrop="ddr(event,${i})" ondragend="de()">
+      <div class="grip">
+        <svg width="9" height="13" viewBox="0 0 9 13"><circle cx="2.5" cy="2" r="1.5" fill="currentColor"/>
+        <circle cx="6.5" cy="2" r="1.5" fill="currentColor"/><circle cx="2.5" cy="6.5" r="1.5" fill="currentColor"/>
+        <circle cx="6.5" cy="6.5" r="1.5" fill="currentColor"/><circle cx="2.5" cy="11" r="1.5" fill="currentColor"/>
+        <circle cx="6.5" cy="11" r="1.5" fill="currentColor"/></svg>
       </div>
-      <div class="patch-info">
-        <div class="patch-name">${esc(p.name)}</div>
-        <div class="patch-meta">
-          <span>${sizeStr}</span>
-          ${p.parsed && p.parsed.version ? `<span>v${esc(p.parsed.version)}</span>` : ''}
-          <div class="patch-content-flags">${flags}</div>
+      <div class="info">
+        <div class="name">${esc(p.name)}</div>
+        <div class="meta">
+          <span>${kb}</span>
+          ${p.parsed && p.parsed.version ? '<span>v' + esc(p.parsed.version) + '</span>' : ''}
+          ${tags}
         </div>
       </div>
-      <div style="display:flex;gap:4px">
-        <button class="move-btn" onclick="moveUp(${i})" ${i===0?'disabled':''}>↑</button>
-        <button class="move-btn" onclick="moveDown(${i})" ${i===patches.length-1?'disabled':''}>↓</button>
+      <div class="btns">
+        <button class="ib" onclick="mv(${i},-1)" ${i===0?'disabled':''}>↑</button>
+        <button class="ib" onclick="mv(${i},1)"  ${i===patches.length-1?'disabled':''}>↓</button>
+        <button class="db" onclick="rm(${i})">✕</button>
       </div>
-      <div class="order-num">${i+1}</div>
-      <button class="del-btn" onclick="removePatch(${i})">✕</button>
+      <div style="font-size:9px;font-weight:700;background:var(--surf2);border:1px solid var(--br);
+           color:var(--mu);width:18px;height:18px;border-radius:3px;display:flex;
+           align-items:center;justify-content:center">${i+1}</div>
     </div>`;
   }).join('');
 }
 
-function getFlags(p) {
-  if (p.isJson) {
-    const t = ['<span class="patch-tag tag-json">JSON</span>'];
-    if (p.parsed) {
-      if (p.parsed.css) t.push('<span class="patch-tag tag-css">CSS</span>');
-      if (p.parsed.js)  t.push('<span class="patch-tag tag-js">JS</span>');
-      if (p.parsed.html && p.parsed.html.length) t.push('<span class="patch-tag tag-html">HTML</span>');
-    }
-    return t.join('');
+function getTags(p) {
+  if (!p.isJson) return '<span class="tag t-js">JS</span>';
+  let t = '<span class="tag t-json">JSON</span>';
+  if (p.parsed) {
+    if (p.parsed.css) t += ' <span class="tag t-css">CSS</span>';
+    if (p.parsed.js)  t += ' <span class="tag t-js">JS</span>';
+    if (p.parsed.html && p.parsed.html.length) t += ' <span class="tag t-html">HTML</span>';
   }
-  return '<span class="patch-tag tag-js">JS</span>';
+  return t;
 }
 
-function moveUp(i)   { if (i > 0)                  { [patches[i-1],patches[i]]=[patches[i],patches[i-1]]; renderList(); } }
-function moveDown(i) { if (i < patches.length-1)   { [patches[i],patches[i+1]]=[patches[i+1],patches[i]]; renderList(); } }
-function removePatch(i) { patches.splice(i,1); renderList(); document.getElementById('preview-section').style.display='none'; }
+function mv(i, dir) {
+  const j = i + dir;
+  if (j < 0 || j >= patches.length) return;
+  [patches[i], patches[j]] = [patches[j], patches[i]];
+  render();
+}
+function rm(i) { patches.splice(i, 1); render(); document.getElementById('prevsec').style.display = 'none'; }
 
-// ── Drag ───────────────────────────────────────────────────
-function dStart(e,i) { dragSrc=i; e.currentTarget.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; }
-function dOver(e,i)  { e.preventDefault(); document.querySelectorAll('.patch-item').forEach(el=>el.classList.remove('drag-target')); if(i!==dragSrc) document.querySelector(`[data-idx="${i}"]`).classList.add('drag-target'); }
-function dDrop(e,i)  { e.preventDefault(); if(dragSrc!==null&&dragSrc!==i){const item=patches.splice(dragSrc,1)[0];patches.splice(i,0,item);renderList();} }
-function dEnd()      { dragSrc=null; document.querySelectorAll('.patch-item').forEach(el=>el.classList.remove('dragging','drag-target')); }
+// ─────────────────────────────────────────────
+// Drag-to-reorder
+// ─────────────────────────────────────────────
+function ds(e, i) { dragSrc = i; e.currentTarget.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; }
+function dov(e, i) {
+  e.preventDefault();
+  document.querySelectorAll('.item').forEach(el => el.classList.remove('over'));
+  if (i !== dragSrc) document.querySelector(`[data-i="${i}"]`).classList.add('over');
+}
+function ddr(e, i) {
+  e.preventDefault();
+  if (dragSrc !== null && dragSrc !== i) {
+    const [item] = patches.splice(dragSrc, 1);
+    patches.splice(i, 0, item);
+    render();
+  }
+}
+function de() { dragSrc = null; document.querySelectorAll('.item').forEach(el => el.classList.remove('dragging','over')); }
 
-// ── Build merged output ─────────────────────────────────────
-// Strategy: replicate exactly what patcher.js does, but inlined.
-//   • CSS  → document.createElement('style'), content set via assignment
-//             Uses JSON.stringify() for the string value — 100% safe, no escaping bugs.
-//   • HTML → ops array via JSON.stringify() — equally safe.
-//   • JS   → emitted RAW (the js field from JSON is already valid JS).
-//             NOT wrapped in another IIFE — avoids double-wrapping existing IIFEs.
-//   • .js  → emitted as-is.
+// ─────────────────────────────────────────────
+// Merge
+//
+// JSON patch  →  handled in 3 separate blocks:
+//   1) CSS: create <style>, set textContent (JSON.stringify = safe escaping)
+//   2) HTML ops: array literal via JSON.stringify, forEach apply
+//   3) JS: emit the js field RAW — it's already valid JS (IIFEs, etc.)
+//
+// JS file     →  emit RAW, untouched, verbatim
+//
+// Nothing is wrapped in an outer IIFE.
+// Nothing is indented or reformatted.
+// ─────────────────────────────────────────────
 function buildMerged() {
-  const filename = (document.getElementById('filename-input').value.trim() || 'update').replace(/\.js$/,'');
-  const now = new Date().toISOString().slice(0,10);
-  const names = patches.map(p=>p.name).join(', ');
+  const fn = (document.getElementById('fn').value.trim() || 'update').replace(/\.js$/, '');
+  const now = new Date().toISOString().slice(0, 10);
+  const names = patches.map(p => p.name).join(', ');
 
-  let out = '';
-  out += `/* ${'═'.repeat(57)}\n`;
-  out += `   ${filename}.js — Merged Patch Bundle\n`;
-  out += `   Generated : ${now}\n`;
-  out += `   Sources   : ${names}\n`;
-  out += `   ${'═'.repeat(57)} */\n`;
+  const SEP = '═'.repeat(55);
+  let out = `/* ${SEP}\n   ${fn}.js — Merged Patch Bundle\n   Generated: ${now}\n   Sources:   ${names}\n   ${SEP} */\n`;
 
   for (const p of patches) {
-    out += `\n/* ${'─'.repeat(20)} ${p.name}${p.parsed&&p.parsed.version?' v'+p.parsed.version:''} ${'─'.repeat(20)} */\n`;
+    out += `\n\n/* ${'─'.repeat(24)} ${p.name} ${'─'.repeat(24)} */\n`;
 
     if (p.isJson && p.parsed) {
-      const { css, html, js } = p.parsed;
-
-      // 1. CSS — safe embed via JSON.stringify
-      if (css) {
+      // ── 1. CSS ──────────────────────────────────────────────
+      if (p.parsed.css) {
+        // JSON.stringify produces a valid JS string literal.
+        // No manual escaping needed — handles \n, \t, quotes, unicode, everything.
         out += `(function(){\n`;
         out += `  var _s = document.createElement('style');\n`;
         out += `  _s.setAttribute('data-patch', ${JSON.stringify(p.name)});\n`;
-        // JSON.stringify produces a valid JS string literal with all escapes handled
-        out += `  _s.textContent = ${JSON.stringify(css)};\n`;
+        out += `  _s.textContent = ${JSON.stringify(p.parsed.css)};\n`;
         out += `  document.head.appendChild(_s);\n`;
         out += `})();\n`;
       }
 
-      // 2. HTML ops — safe embed via JSON.stringify on the whole array
-      if (html && html.length) {
+      // ── 2. HTML ops ─────────────────────────────────────────
+      if (p.parsed.html && p.parsed.html.length) {
+        // JSON.stringify the whole array — handles all string content safely.
         out += `(function(){\n`;
-        out += `  var ops = ${JSON.stringify(html, null, 2)};\n`;
+        out += `  var ops = ${JSON.stringify(p.parsed.html)};\n`;
         out += `  ops.forEach(function(op){\n`;
         out += `    var el = document.querySelector(op.selector);\n`;
-        out += `    if (!el) { console.warn('[${filename}] selector not found:', op.selector); return; }\n`;
+        out += `    if (!el) { console.warn('[${fn}] selector not found:', op.selector); return; }\n`;
         out += `    var pos = op.position || 'afterend';\n`;
-        out += `    if      (op.action === 'replace')   el.outerHTML = op.content;\n`;
-        out += `    else if (op.action === 'innerHTML')  el.innerHTML = op.content;\n`;
-        out += `    else if (op.action === 'insert')     el.insertAdjacentHTML(pos, op.content);\n`;
-        out += `    else if (op.action === 'remove')     el.remove();\n`;
-        out += `    else if (op.action === 'attr') { var kv=op.content.split('='); el.setAttribute(kv[0].trim(),kv[1].trim()); }\n`;
+        out += `    if      (op.action === 'replace')   { el.outerHTML = op.content; }\n`;
+        out += `    else if (op.action === 'innerHTML')  { el.innerHTML = op.content; }\n`;
+        out += `    else if (op.action === 'insert')     { el.insertAdjacentHTML(pos, op.content); }\n`;
+        out += `    else if (op.action === 'remove')     { el.remove(); }\n`;
+        out += `    else if (op.action === 'attr')       { var kv=op.content.split('='); el.setAttribute(kv[0].trim(),kv[1].trim()); }\n`;
         out += `  });\n`;
         out += `})();\n`;
       }
 
-      // 3. JS — emit raw, no wrapping, no indentation changes
-      //    The js field is already valid JS (IIFEs, etc.) — just write it out.
-      if (js) {
-        out += js;
-        if (!js.endsWith('\n')) out += '\n';
+      // ── 3. JS ────────────────────────────────────────────────
+      // Emit completely raw — zero modification.
+      // The js field is already valid JS code (IIFEs, expressions, etc.).
+      // Do NOT wrap, indent, or escape anything.
+      if (p.parsed.js) {
+        out += p.parsed.js;
+        if (!p.parsed.js.endsWith('\n')) out += '\n';
       }
 
     } else {
-      // Raw .js file — emit as-is, zero modification
+      // ── Raw .js file — completely verbatim, zero modification ──
       out += p.raw;
       if (!p.raw.endsWith('\n')) out += '\n';
     }
@@ -312,63 +368,67 @@ function buildMerged() {
   return out;
 }
 
-// ── Preview ────────────────────────────────────────────────
-function buildPreview() {
-  if (!patches.length) { showToast('No patches loaded', true); return; }
-  const merged = buildMerged();
-  const lines = merged.split('\n').length;
-  const bytes = new TextEncoder().encode(merged).length;
-  const sizeStr = bytes < 1024 ? bytes + ' B' : (bytes/1024).toFixed(1) + ' KB';
-  document.getElementById('preview-stats').innerHTML =
-    `<div class="preview-stat"><strong>${patches.length}</strong>&nbsp;sources</div>
-     <div class="preview-stat"><strong>${lines}</strong>&nbsp;lines</div>
-     <div class="preview-stat"><strong>${sizeStr}</strong></div>`;
-  document.getElementById('code-output').innerHTML = highlight(merged);
-  document.getElementById('preview-section').style.display = '';
-  document.getElementById('preview-section').scrollIntoView({ behavior:'smooth', block:'start' });
+// ─────────────────────────────────────────────
+// Preview — show plain text, no HTML markup
+// ─────────────────────────────────────────────
+function preview() {
+  if (!patches.length) { toast('No patches loaded', 1); return; }
+  lastMerged = buildMerged();
+  const lines = lastMerged.split('\n').length;
+  const bytes = new TextEncoder().encode(lastMerged).length;
+  const sz = bytes < 1024 ? bytes + ' B' : (bytes / 1024).toFixed(1) + ' KB';
+
+  document.getElementById('stats').innerHTML =
+    `<div class="stat"><strong>${patches.length}</strong> sources</div>
+     <div class="stat"><strong>${lines}</strong> lines</div>
+     <div class="stat"><strong>${sz}</strong></div>`;
+
+  // textContent — plain text, no HTML parsing, no escaping issues, no "tok-comment"
+  document.getElementById('out').textContent = lastMerged;
+  document.getElementById('prevsec').style.display = '';
+  document.getElementById('prevsec').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-// ── Download ───────────────────────────────────────────────
-function downloadMerged() {
+// ─────────────────────────────────────────────
+// Export
+// ─────────────────────────────────────────────
+function doExport() {
   if (!patches.length) return;
-  const merged = buildMerged();
-  const filename = (document.getElementById('filename-input').value.trim() || 'update').replace(/\.js$/,'') + '.js';
-  const blob = new Blob([merged], {type:'text/javascript'});
+  lastMerged = buildMerged();
+  const fn = (document.getElementById('fn').value.trim() || 'update').replace(/\.js$/, '') + '.js';
+  const blob = new Blob([lastMerged], { type: 'text/javascript' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename; a.click();
+  const a = document.createElement('a'); a.href = url; a.download = fn; a.click();
   URL.revokeObjectURL(url);
-  showToast('Downloaded ' + filename);
-  buildPreview();
+  toast('Downloaded ' + fn);
+  // Also update preview
+  document.getElementById('out').textContent = lastMerged;
+  document.getElementById('prevsec').style.display = '';
 }
 
-function copyOutput() {
-  navigator.clipboard.writeText(document.getElementById('code-output').textContent)
-    .then(() => showToast('Copied to clipboard'));
+// ─────────────────────────────────────────────
+// Copy
+// ─────────────────────────────────────────────
+function doCopy() {
+  // Use lastMerged string directly — not innerHTML, not textContent
+  if (!lastMerged) lastMerged = buildMerged();
+  navigator.clipboard.writeText(lastMerged).then(() => toast('Copied'));
 }
 
-// ── Minimal syntax highlight ───────────────────────────────
-function highlight(code) {
-  return esc(code)
-    .replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="tok-comment">$1</span>')
-    .replace(/\/\/.*/g, m => m.startsWith('/*') ? m : `<span class="tok-comment">${m}</span>`)
-    .replace(/\b(function|var|let|const|return|if|else|typeof|new|this|null|undefined|true|false|for|forEach|try|catch|setTimeout|setInterval|clearInterval)\b/g,
-      '<span class="tok-keyword">$1</span>')
-    .replace(/("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`)/g, '<span class="tok-string">$1</span>')
-    .replace(/\b(\d+(\.\d+)?)\b/g, '<span class="tok-num">$1</span>');
-}
-function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+// ─────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-// ── Toast ──────────────────────────────────────────────────
-let toastTimer;
-function showToast(msg, warn) {
-  const t = document.getElementById('toast');
+let _tt;
+function toast(msg, err) {
+  const t = document.getElementById('tst');
   t.textContent = msg;
-  t.style.color = warn ? 'var(--red)' : 'var(--green)';
-  t.style.borderColor = warn ? 'var(--red)' : 'var(--green)';
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+  t.style.color = err ? 'var(--red)' : 'var(--grn)';
+  t.style.borderColor = err ? 'var(--red)' : 'var(--grn)';
+  t.classList.add('on');
+  clearTimeout(_tt);
+  _tt = setTimeout(() => t.classList.remove('on'), 2000);
 }
 </script>
 </body>
