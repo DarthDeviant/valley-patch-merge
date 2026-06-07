@@ -3,165 +3,270 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Patch Merger</title>
+<title>patch.merge v4 — Valley Farm</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0d0f14;--surf:#13161d;--surf2:#1a1e27;
-  --br:rgba(255,255,255,0.08);--br2:rgba(255,255,255,0.18);
-  --tx:#e8eaf0;--mu:#5a6070;
-  --acc:#f97316;--acc-d:rgba(249,115,22,0.13);
-  --grn:#22c55e;--grn-d:rgba(34,197,94,0.13);
-  --blu:#60a5fa;--blu-d:rgba(96,165,250,0.13);
-  --red:#f87171;--red-d:rgba(248,113,113,0.13);
-  --pur:#c084fc;--pur-d:rgba(192,132,252,0.13);
-  --r:8px;--r2:12px;
-  --mono:ui-monospace,'Cascadia Code','Consolas','Menlo',monospace;
+  --bg:#080a0f;--surf:#0e1118;--surf2:#161b24;--surf3:#1d2330;
+  --br:rgba(255,255,255,0.07);--br2:rgba(255,255,255,0.15);
+  --tx:#dde1ec;--mu:#4a5468;--mu2:#6b7a96;
+  --acc:#f97316;--acc-d:rgba(249,115,22,0.1);
+  --grn:#22c55e;--grn-d:rgba(34,197,94,0.1);
+  --blu:#60a5fa;--blu-d:rgba(96,165,250,0.1);
+  --red:#f87171;--red-d:rgba(248,113,113,0.1);
+  --ylw:#fbbf24;--ylw-d:rgba(251,191,36,0.1);
+  --pur:#a78bfa;--pur-d:rgba(167,139,250,0.1);
+  --r:6px;--r2:10px;
+  --mono:'Cascadia Code','Fira Code','Consolas','Menlo',ui-monospace,monospace;
 }
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--tx);font-family:var(--mono);font-size:13px;min-height:100vh;line-height:1.6}
+body{background:var(--bg);color:var(--tx);font-family:var(--mono);font-size:12.5px;min-height:100vh;line-height:1.6}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;
-  background:linear-gradient(rgba(255,255,255,0.016) 1px,transparent 1px),
-             linear-gradient(90deg,rgba(255,255,255,0.016) 1px,transparent 1px);
-  background-size:44px 44px}
+  background:radial-gradient(ellipse 60% 40% at 20% 0%,rgba(249,115,22,0.04) 0%,transparent 70%),
+             radial-gradient(ellipse 50% 30% at 80% 100%,rgba(96,165,250,0.03) 0%,transparent 70%),
+             linear-gradient(rgba(255,255,255,0.012) 1px,transparent 1px),
+             linear-gradient(90deg,rgba(255,255,255,0.012) 1px,transparent 1px);
+  background-size:100% 100%,100% 100%,40px 40px,40px 40px}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:2.5rem 1.5rem 6rem}
 
-.wrap{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:2rem 1.5rem 5rem}
-
-/* header */
-.logo{font-size:26px;font-weight:800;letter-spacing:-1px;margin-bottom:4px}
+.hdr{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.logo{font-size:22px;font-weight:800;letter-spacing:-.5px}
 .logo em{color:var(--acc);font-style:normal}
-.sub{font-size:11px;color:var(--mu);margin-bottom:2.5rem}
+.ver{font-size:10px;color:var(--mu);padding:2px 7px;border:1px solid var(--br2);border-radius:3px;letter-spacing:1px}
+.sub{font-size:10.5px;color:var(--mu);margin-bottom:2.5rem}
 
-/* section label */
-.lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
-  color:var(--mu);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.lbl{font-size:9.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--mu2);margin-bottom:10px;display:flex;align-items:center;gap:10px}
 .lbl::after{content:'';flex:1;height:1px;background:var(--br)}
+.lbl span{color:var(--acc)}
 
 /* drop zone */
-.drop{border:1.5px dashed var(--br2);border-radius:var(--r2);background:var(--surf);
-  padding:2.5rem 2rem;text-align:center;cursor:pointer;
+.drop{border:1.5px dashed rgba(249,115,22,0.25);border-radius:var(--r2);
+  background:linear-gradient(135deg,var(--surf) 0%,var(--surf2) 100%);
+  padding:1.8rem 2rem;text-align:center;cursor:pointer;
   transition:border-color .2s,background .2s;position:relative}
 .drop input{position:absolute;inset:0;opacity:0;cursor:pointer}
 .drop:hover,.drop.over{border-color:var(--acc);background:var(--acc-d)}
-.drop-ico{font-size:28px;display:block;margin-bottom:8px}
-.drop-t{font-size:15px;font-weight:700;color:var(--tx);margin-bottom:4px}
-.drop-s{font-size:11px;color:var(--mu)}
+.drop-ico{font-size:22px;display:block;margin-bottom:6px;opacity:.7}
+.drop-t{font-size:13.5px;font-weight:700;margin-bottom:3px}
+.drop-s{font-size:10.5px;color:var(--mu)}
+.tag-pill{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--acc);background:var(--acc-d);border:1px solid rgba(249,115,22,0.25);padding:2px 8px;border-radius:3px;margin-top:7px}
 
-/* empty */
-.empty{text-align:center;padding:2rem;color:var(--mu);font-size:12px;
-  border:1px dashed var(--br);border-radius:var(--r2);background:var(--surf);margin-top:10px}
+/* game drop */
+.drop-game{border-color:rgba(96,165,250,0.25)}
+.drop-game:hover,.drop-game.over{border-color:var(--blu);background:var(--blu-d)}
+.tag-pill-blu{color:var(--blu);background:var(--blu-d);border-color:rgba(96,165,250,0.25)}
+
+/* warn */
+.warn{background:var(--acc-d);border:1px solid rgba(249,115,22,.2);border-radius:var(--r);padding:5px 11px;font-size:10.5px;color:var(--acc);margin-top:6px;display:none}
+.warn.show{display:block}
 
 /* list */
-.list{display:flex;flex-direction:column;gap:6px;margin-top:10px}
-
+.empty{text-align:center;padding:1.4rem;color:var(--mu);font-size:11px;border:1px dashed var(--br);border-radius:var(--r2);background:var(--surf);margin-top:10px}
+.list{display:flex;flex-direction:column;gap:5px;margin-top:10px}
 .item{background:var(--surf);border:1px solid var(--br);border-radius:var(--r);
-  padding:10px 12px;display:grid;grid-template-columns:20px 1fr auto auto;
-  align-items:center;gap:10px;user-select:none;transition:border-color .15s,background .15s}
+  padding:8px 12px;display:grid;grid-template-columns:16px 1fr auto auto auto;
+  align-items:center;gap:9px;user-select:none;transition:border-color .15s}
 .item:hover{border-color:var(--br2)}
-.item.dragging{opacity:.35}
-.item.over{border-color:var(--acc);background:var(--acc-d)}
-
+.item.dragging{opacity:.3}.item.over{border-color:var(--acc);background:var(--acc-d)}
 .grip{color:var(--mu);cursor:grab;display:flex;align-items:center}
 .grip:active{cursor:grabbing}
-
-.info{min-width:0}
-.name{font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.meta{font-size:10px;color:var(--mu);display:flex;gap:8px;align-items:center;margin-top:2px;flex-wrap:wrap}
-
-.tag{font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:1px 6px;border-radius:3px}
-.t-json{background:var(--blu-d);color:var(--blu);border:1px solid rgba(96,165,250,.2)}
-.t-js  {background:var(--acc-d);color:var(--acc);border:1px solid rgba(249,115,22,.2)}
-.t-css {background:var(--grn-d);color:var(--grn);border:1px solid rgba(34,197,94,.2)}
-.t-html{background:var(--pur-d);color:var(--pur);border:1px solid rgba(192,132,252,.2)}
-
-.btns{display:flex;gap:4px}
-.ib,.db{background:transparent;border:1px solid var(--br);color:var(--mu);
-  width:28px;height:28px;border-radius:5px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;font-size:13px;
-  transition:background .15s,color .15s,border-color .15s}
+.iname{font-weight:700;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.imeta{font-size:10px;color:var(--mu2);margin-top:1px}
+.num{font-size:9px;font-weight:700;color:var(--mu);background:var(--surf2);border:1px solid var(--br);width:17px;height:17px;border-radius:3px;display:flex;align-items:center;justify-content:center}
+.btns{display:flex;gap:3px}
+.ib,.db{background:transparent;border:1px solid var(--br);color:var(--mu);width:24px;height:24px;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .12s}
 .ib:hover{background:var(--surf2);color:var(--tx);border-color:var(--br2)}
-.ib:disabled{opacity:.28;cursor:default}
+.ib:disabled{opacity:.2;cursor:default}
 .db:hover{background:var(--red-d);color:var(--red);border-color:rgba(248,113,113,.3)}
+.sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.s-idle{background:var(--mu)}.s-pass{background:var(--grn)}.s-fail{background:var(--red)}
+.s-run{background:var(--ylw);animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* output bar */
-.out-bar{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;margin-top:10px}
+/* game file list */
+.gfile-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:5px;margin-top:10px}
+.gfile-item{background:var(--surf);border:1px solid var(--br);border-radius:var(--r);
+  padding:7px 10px;display:flex;align-items:center;gap:7px;font-size:11px}
+.gfile-item.core{border-color:rgba(96,165,250,.3)}
+.gfile-dot{width:6px;height:6px;border-radius:50%;background:var(--mu);flex-shrink:0}
+.gfile-item.core .gfile-dot{background:var(--blu)}
+.gfile-name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.gfile-sz{font-size:9.5px;color:var(--mu)}
+.gfile-rm{background:transparent;border:none;color:var(--mu);cursor:pointer;font-size:11px;padding:0 2px;line-height:1}
+.gfile-rm:hover{color:var(--red)}
+
+/* out bar */
+.out-bar{display:grid;grid-template-columns:1fr auto auto auto;gap:7px;align-items:center;margin-top:10px}
 .fn-wrap{position:relative}
 .fn-in{width:100%;background:var(--surf);border:1px solid var(--br);border-radius:var(--r);
-  color:var(--tx);font-family:var(--mono);font-size:13px;padding:9px 36px 9px 12px;outline:none;transition:border-color .2s}
+  color:var(--tx);font-family:var(--mono);font-size:12.5px;padding:8px 36px 8px 11px;outline:none;transition:border-color .2s}
 .fn-in:focus{border-color:var(--acc)}
-.fn-ext{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--mu);pointer-events:none}
-
-.btn{font-family:var(--mono);font-size:12px;font-weight:700;padding:9px 16px;
-  border-radius:var(--r);cursor:pointer;border:1px solid;transition:all .15s;
-  white-space:nowrap;display:flex;align-items:center;gap:6px}
-.b-pre{background:transparent;color:var(--blu);border-color:rgba(96,165,250,.3)}
+.fn-ext{position:absolute;right:9px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--mu);pointer-events:none}
+.btn{font-family:var(--mono);font-size:11px;font-weight:700;padding:7px 13px;border-radius:var(--r);cursor:pointer;border:1px solid;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.b-pre{background:transparent;color:var(--blu);border-color:rgba(96,165,250,.25)}
 .b-pre:hover{background:var(--blu-d);border-color:var(--blu)}
+.b-tst{background:transparent;color:var(--ylw);border-color:rgba(251,191,36,.25)}
+.b-tst:hover{background:var(--ylw-d);border-color:var(--ylw)}
 .b-exp{background:var(--acc);color:#000;border-color:var(--acc);font-weight:800}
-.b-exp:hover{background:#e8680a;border-color:#e8680a}
-.b-exp:disabled{background:var(--surf2);color:var(--mu);border-color:var(--br);cursor:not-allowed}
-.b-cpy{background:transparent;color:var(--grn);border-color:rgba(34,197,94,.3);font-size:11px;padding:5px 10px}
-.b-cpy:hover{background:var(--grn-d)}
+.b-exp:hover{background:#e8680a}
+.b-exp:disabled,.b-tst:disabled,.b-pre:disabled,.b-launch:disabled{opacity:.3;cursor:not-allowed;pointer-events:none}
+.b-launch{background:var(--blu);color:#000;border-color:var(--blu);font-weight:800;font-size:12px;padding:9px 18px}
+.b-launch:hover{background:#3b91f0}
+.b-inject{background:var(--grn);color:#000;border-color:var(--grn);font-weight:800}
+.b-inject:hover{background:#16a34a}
+.b-inject:disabled{opacity:.35;cursor:not-allowed}
+
+/* integrity */
+.integ-bar{margin-top:7px;background:var(--surf);border:1px solid var(--br);border-radius:var(--r);padding:8px 12px;display:flex;align-items:center;gap:10px}
+.integ-label{font-size:9.5px;color:var(--mu2);white-space:nowrap;letter-spacing:1px;text-transform:uppercase}
+.integ-track{flex:1;height:4px;background:var(--surf3);border-radius:2px;overflow:hidden}
+.integ-fill{height:100%;border-radius:2px;transition:width .5s}
+.integ-val{font-size:10.5px;font-weight:700;min-width:48px;text-align:right}
 
 /* preview */
-.prev-wrap{margin-top:10px;background:var(--surf);border:1px solid var(--br);border-radius:var(--r2);overflow:hidden}
-.prev-hd{padding:9px 14px;border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between}
-.prev-lbl{font-size:10px;font-weight:700;color:var(--mu);letter-spacing:1px;text-transform:uppercase}
-.stats{display:flex;gap:12px}
-.stat{font-size:10px;color:var(--mu)}
-.stat strong{color:var(--tx)}
-.code{font-family:var(--mono);font-size:11.5px;line-height:1.65;color:#c9d1d9;
-  padding:1rem 1.25rem;overflow:auto;max-height:440px;white-space:pre;background:transparent}
+.prev-wrap{background:var(--surf);border:1px solid var(--br);border-radius:var(--r2);overflow:hidden}
+.prev-hd{padding:7px 12px;border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between}
+.prev-lbl{font-size:9px;font-weight:700;color:var(--mu2);letter-spacing:1.5px;text-transform:uppercase}
+.stats{display:flex;gap:10px}
+.stat{font-size:10px;color:var(--mu)}.stat strong{color:var(--tx)}
+.b-cpy{background:transparent;color:var(--grn);border-color:rgba(34,197,94,.25);font-size:10px;padding:3px 8px}
+.b-cpy:hover{background:var(--grn-d)}
+.code{font-family:var(--mono);font-size:11px;line-height:1.65;color:#a8b4cc;padding:.8rem 1rem;overflow:auto;max-height:380px;white-space:pre;background:transparent}
+
+/* test console */
+.console-wrap{background:var(--surf);border:1px solid var(--br);border-radius:var(--r2);overflow:hidden}
+.console-hd{padding:8px 13px;border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.console-title{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu2)}
+.badges{display:flex;gap:5px}
+.badge{font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:2px 7px;border-radius:3px;display:flex;align-items:center;gap:4px}
+.badge-pass{background:var(--grn-d);color:var(--grn);border:1px solid rgba(34,197,94,.2)}
+.badge-fail{background:var(--red-d);color:var(--red);border:1px solid rgba(248,113,113,.2)}
+.badge-idle{background:var(--surf2);color:var(--mu);border:1px solid var(--br)}
+.badge-run{background:var(--ylw-d);color:var(--ylw);border:1px solid rgba(251,191,36,.2)}
+.console-body{padding:.4rem 0;max-height:300px;overflow-y:auto}
+.console-row{padding:5px 13px;display:grid;grid-template-columns:9px 1fr auto;align-items:start;gap:9px;border-bottom:1px solid var(--br);font-size:11px}
+.console-row:last-child{border-bottom:none}
+.cr-dot{width:8px;height:8px;border-radius:50%;margin-top:2px;flex-shrink:0}
+.cr-pass{background:var(--grn);box-shadow:0 0 5px rgba(34,197,94,.4)}
+.cr-fail{background:var(--red);box-shadow:0 0 5px rgba(248,113,113,.4)}
+.cr-run{background:var(--ylw);animation:pulse 1s ease-in-out infinite}
+.cr-idle{background:var(--mu)}
+.cr-name{font-weight:700;margin-bottom:2px}
+.cr-err{font-size:10px;color:var(--red);opacity:.85;font-style:italic}
+.cr-ok{font-size:10px;color:var(--grn);opacity:.7}
+.cr-ms{font-size:9.5px;color:var(--mu);white-space:nowrap;margin-top:2px}
+.console-empty{padding:1.5rem;text-align:center;color:var(--mu);font-size:11px}
+.status-banner{padding:9px 13px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--br);background:var(--surf2)}
+.status-text{font-size:11px;font-weight:700}
+.st-pass{color:var(--grn)}.st-fail{color:var(--red)}.st-idle{color:var(--mu)}.st-run{color:var(--ylw)}
+.pct{font-size:10px;color:var(--mu2)}
+
+/* ── GAME TRIAL ── */
+.trial-wrap{background:var(--surf);border:1px solid var(--br);border-radius:var(--r2);overflow:hidden}
+.trial-hd{padding:9px 13px;border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.trial-title{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu2)}
+.trial-controls{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.trial-frame-wrap{position:relative;background:#0a0e12}
+.trial-placeholder{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;height:360px;color:var(--mu);font-size:12px;text-align:center;padding:2rem
+}
+.trial-placeholder-ico{font-size:36px;opacity:.3}
+iframe#game-frame{width:100%;height:640px;border:none;display:block;background:#1a1f2a}
+.frame-overlay{
+  position:absolute;top:0;left:0;right:0;
+  background:linear-gradient(to bottom,rgba(8,10,15,0.85) 0%,transparent 100%);
+  padding:8px 12px;display:flex;align-items:center;gap:8px;z-index:10;pointer-events:none
+}
+.frame-overlay .btn{pointer-events:all}
+.frame-badge{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:3px;background:rgba(8,10,15,.8);border:1px solid var(--br2);color:var(--mu2)}
+.frame-badge.live{color:var(--grn);border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08)}
+.frame-badge.err{color:var(--red);border-color:rgba(248,113,113,.3)}
+
+/* game log */
+.gamelog-wrap{border-top:1px solid var(--br);background:var(--surf2)}
+.gamelog-hd{padding:6px 12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.gamelog-title{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu2)}
+.gamelog-body{max-height:200px;overflow-y:auto;display:none}
+.gamelog-body.open{display:block}
+.log-row{padding:3px 12px;font-size:10.5px;font-family:var(--mono);border-bottom:1px solid rgba(255,255,255,0.03);display:flex;gap:8px;align-items:baseline}
+.log-time{color:var(--mu);font-size:9.5px;flex-shrink:0}
+.log-msg{word-break:break-all}
+.log-log{color:#8a99b5}
+.log-warn{color:var(--ylw)}.log-error{color:var(--red)}.log-info{color:var(--blu)}
+.log-patch{color:var(--grn);font-weight:700}
+
+/* inject result banner */
+.inject-result{padding:7px 13px;font-size:11px;font-weight:700;border-top:1px solid var(--br);display:none}
+.inject-result.show{display:flex;align-items:center;gap:10px}
+.inject-result.ok{color:var(--grn);background:var(--grn-d)}
+.inject-result.bad{color:var(--red);background:var(--red-d)}
+
+/* game file needs-required highlight */
+.needs-req{border-color:rgba(248,113,113,.35)!important}
+.req-note{font-size:10px;color:var(--red);margin-top:6px}
+.req-note.hide{display:none}
 
 .gap{margin-top:2rem}
 
-/* toast */
-.toast{position:fixed;bottom:22px;right:22px;background:var(--surf2);
-  border:1px solid;font-family:var(--mono);font-size:12px;
-  padding:9px 15px;border-radius:var(--r);opacity:0;transform:translateY(6px);
-  transition:opacity .2s,transform .2s;pointer-events:none;z-index:99}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--surf2);border:1px solid;font-family:var(--mono);font-size:11px;padding:8px 14px;border-radius:var(--r);opacity:0;transform:translateY(5px);transition:opacity .2s,transform .2s;pointer-events:none;z-index:999}
 .toast.on{opacity:1;transform:none}
 
-::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--br2);border-radius:3px}
+::-webkit-scrollbar-thumb{background:var(--br2);border-radius:2px}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <div class="logo">patch<em>.</em>merge <span style="font-size:11px;font-weight:400;color:var(--mu)">v3</span></div>
-  <div class="sub">// load patches, set order, export as one clean .js file</div>
-
-  <div class="lbl">01 — load patches</div>
-  <div class="drop" id="dz">
-    <input type="file" id="fi" multiple accept=".js,.json">
-    <span class="drop-ico">⬡</span>
-    <div class="drop-t">Drop patch files here</div>
-    <div class="drop-s">Accepts .js and .json — drop multiple at once</div>
+  <div class="hdr">
+    <div class="logo">patch<em>.</em>merge</div>
+    <div class="ver">v4 · Valley Farm Edition</div>
   </div>
+  <div class="sub">// js-only · in-order · integrity-verified · live game trial</div>
 
-  <div class="empty" id="emp">No patches loaded yet.</div>
-  <div class="list" id="lst" style="display:none"></div>
+  <!-- ══ 01 PATCH FILES ══ -->
+  <div class="lbl"><span>01</span> load patch files <span style="color:var(--mu);font-size:9px;text-transform:none;letter-spacing:0">.js only</span></div>
+  <div class="drop" id="pdz">
+    <input type="file" id="pfi" multiple accept=".js">
+    <span class="drop-ico">▣</span>
+    <div class="drop-t">Drop .js patch files here</div>
+    <div class="drop-s">Drag to reorder · only .js accepted</div>
+    <div class="tag-pill">⬡ .js only</div>
+  </div>
+  <div class="warn" id="pwarn"></div>
+  <div class="empty" id="pemp">No patches loaded yet.</div>
+  <div class="list" id="plst" style="display:none"></div>
 
+  <!-- ══ 02 OUTPUT ══ -->
   <div class="gap">
-    <div class="lbl">02 — output filename</div>
+    <div class="lbl"><span>02</span> output</div>
     <div class="out-bar">
       <div class="fn-wrap">
         <input class="fn-in" type="text" id="fn" value="update" placeholder="filename">
         <span class="fn-ext">.js</span>
       </div>
-      <button class="btn b-pre" onclick="preview()">⚡ preview</button>
+      <button class="btn b-pre" id="prebtn" onclick="preview()" disabled>⚡ preview</button>
+      <button class="btn b-tst" id="tstbtn" onclick="runTests()" disabled>◉ run tests</button>
       <button class="btn b-exp" id="expbtn" onclick="doExport()" disabled>↓ export</button>
+    </div>
+    <div class="integ-bar" id="integbar" style="display:none">
+      <span class="integ-label">Integrity</span>
+      <div class="integ-track"><div class="integ-fill" id="integfill"></div></div>
+      <span class="integ-val" id="integval"></span>
     </div>
   </div>
 
+  <!-- preview -->
   <div id="prevsec" style="display:none">
     <div class="gap">
-      <div class="lbl">03 — merged output</div>
+      <div class="lbl"><span>03</span> merged output</div>
       <div class="prev-wrap">
         <div class="prev-hd">
           <div class="prev-lbl">preview</div>
-          <div style="display:flex;align-items:center;gap:10px">
+          <div style="display:flex;align-items:center;gap:8px">
             <div class="stats" id="stats"></div>
             <button class="btn b-cpy" onclick="doCopy()">⎘ copy</button>
           </div>
@@ -171,254 +276,608 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;
     </div>
   </div>
 
+  <!-- ══ TEST CONSOLE ══ -->
+  <div id="testsec" style="display:none">
+    <div class="gap">
+      <div class="lbl"><span>04</span> test console <span style="color:var(--mu);font-size:9px;text-transform:none;letter-spacing:0">sandbox execution</span></div>
+      <div class="console-wrap">
+        <div class="console-hd">
+          <div class="console-title">patch validator</div>
+          <div class="badges">
+            <div class="badge badge-pass" id="b-pass" style="display:none"><span id="n-pass">0</span> passing</div>
+            <div class="badge badge-fail" id="b-fail" style="display:none"><span id="n-fail">0</span> failing</div>
+            <div class="badge badge-idle" id="b-idle">waiting</div>
+            <div class="badge badge-run" id="b-run" style="display:none">▶ running</div>
+          </div>
+        </div>
+        <div class="console-body" id="console-rows"><div class="console-empty">Run tests to validate patch execution.</div></div>
+        <div class="status-banner">
+          <div class="status-text st-idle" id="status-txt">— awaiting test run</div>
+          <div class="pct" id="status-pct"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 05 GAME TRIAL ══ -->
+  <div class="gap">
+    <div class="lbl"><span>05</span> game trial <span style="color:var(--mu);font-size:9px;text-transform:none;letter-spacing:0">drop game files to run live</span></div>
+
+    <!-- Game file loader -->
+    <div class="drop drop-game" id="gdz">
+      <input type="file" id="gfi" multiple accept=".html,.css,.js,.json">
+      <span class="drop-ico">🌾</span>
+      <div class="drop-t">Drop Valley Farm source files here</div>
+      <div class="drop-s">index.html · script.js · style.css · winter.js · fall_town.js · etc.</div>
+      <div class="tag-pill tag-pill-blu">⬡ .html .css .js accepted</div>
+    </div>
+    <div class="req-note hide" id="req-note">⚠ index.html and script.js are required to launch the trial</div>
+
+    <div id="gfile-list-wrap" style="display:none">
+      <div class="gfile-list" id="gfile-list"></div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center">
+      <button class="btn b-launch" id="launch-btn" onclick="launchTrial()" disabled>▶ Launch Game Trial</button>
+      <button class="btn b-inject" id="inject-btn" onclick="injectPatch()" disabled style="display:none">⚡ Inject Merged Patch</button>
+      <button class="btn" id="reload-btn" onclick="reloadTrial()" disabled style="display:none;color:var(--mu2);border-color:var(--br2)">↺ Reload</button>
+      <button class="btn" onclick="clearGameLog()" style="color:var(--mu);border-color:var(--br);font-size:10px;padding:5px 10px">⌫ clear log</button>
+    </div>
+
+    <!-- iframe + log -->
+    <div class="trial-wrap" id="trial-wrap" style="margin-top:10px">
+      <div class="trial-hd">
+        <div class="trial-title">🌾 valley farm — trial environment</div>
+        <div class="trial-controls">
+          <div class="frame-badge" id="trial-status-badge">not launched</div>
+          <div class="frame-badge" id="trial-patch-badge" style="display:none">no patch injected</div>
+        </div>
+      </div>
+      <div class="trial-frame-wrap" id="trial-frame-wrap">
+        <div class="trial-placeholder" id="trial-placeholder">
+          <div class="trial-placeholder-ico">🌾</div>
+          <div>Load game files above and click <strong>Launch Game Trial</strong></div>
+          <div style="font-size:10.5px;color:var(--mu)">Required: index.html + script.js · Recommended: style.css, winter.js, fall_town.js</div>
+        </div>
+      </div>
+
+      <!-- inject result -->
+      <div class="inject-result" id="inject-result"></div>
+
+      <!-- game log -->
+      <div class="gamelog-wrap">
+        <div class="gamelog-hd" onclick="toggleGameLog()">
+          <div class="gamelog-title">game console <span id="log-count" style="color:var(--mu)">0 entries</span></div>
+          <div style="font-size:10px;color:var(--mu)" id="log-toggle-lbl">▼ expand</div>
+        </div>
+        <div class="gamelog-body" id="gamelog-body"></div>
+      </div>
+    </div>
+  </div>
+
 </div>
 <div class="toast" id="tst"></div>
 
 <script>
-// ─────────────────────────────────────────────
-// State
-// ─────────────────────────────────────────────
+/* ═══════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════ */
 const patches = [];
 let dragSrc = null;
 let lastMerged = '';
+let testResults = [];
+const gameFiles = {};   // filename → { name, raw, size }
+let gameLoaded = false;
+const gameLogs = [];
 
-// ─────────────────────────────────────────────
-// Drop zone
-// ─────────────────────────────────────────────
-const dz = document.getElementById('dz');
-const fi = document.getElementById('fi');
+/* ═══════════════════════════════════════════
+   PATCH DROP ZONE
+═══════════════════════════════════════════ */
+const pdz = document.getElementById('pdz');
+const pfi = document.getElementById('pfi');
+pdz.addEventListener('dragover', e=>{e.preventDefault();pdz.classList.add('over');});
+pdz.addEventListener('dragleave', ()=>pdz.classList.remove('over'));
+pdz.addEventListener('drop', e=>{e.preventDefault();pdz.classList.remove('over');loadPatchFiles(e.dataTransfer.files);});
+pfi.addEventListener('change', ()=>{loadPatchFiles(pfi.files);pfi.value='';});
 
-dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
-dz.addEventListener('dragleave', () => dz.classList.remove('over'));
-dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('over'); loadFiles(e.dataTransfer.files); });
-fi.addEventListener('change', () => { loadFiles(fi.files); fi.value = ''; });
-
-function loadFiles(files) {
+function loadPatchFiles(files) {
+  const warn = document.getElementById('pwarn');
+  let rejected = 0;
   Array.from(files).forEach(file => {
+    if (!file.name.toLowerCase().endsWith('.js')) { rejected++; return; }
     const r = new FileReader();
     r.onload = ev => {
       const raw = ev.target.result;
-      const isJson = file.name.toLowerCase().endsWith('.json');
-      let parsed = null;
-      if (isJson) {
-        try { parsed = JSON.parse(raw); }
-        catch { toast('Cannot parse ' + file.name, 1); return; }
-      }
-      patches.push({ id: Date.now() + Math.random(), name: file.name, raw, parsed, isJson, size: file.size });
-      render();
+      let syntaxOk = true, syntaxErr = '';
+      try { new Function(raw); } catch(e) { syntaxOk=false; syntaxErr=e.message; }
+      patches.push({ id: Date.now()+Math.random(), name: file.name, raw, size: file.size, syntaxOk, syntaxErr, testStatus: 'idle' });
+      renderPatches();
+      toast('+ ' + file.name + (syntaxOk ? '' : ' ⚠ syntax'));
+    };
+    r.readAsText(file);
+  });
+  if (rejected) {
+    warn.textContent = `⚠ ${rejected} file${rejected>1?'s':''} skipped — only .js patches accepted.`;
+    warn.classList.add('show');
+    setTimeout(()=>warn.classList.remove('show'), 4000);
+  }
+}
+
+function renderPatches() {
+  const lst = document.getElementById('plst');
+  const emp = document.getElementById('pemp');
+  const has = patches.length > 0;
+  ['expbtn','tstbtn','prebtn'].forEach(id=>document.getElementById(id).disabled=!has);
+  if (!has) { lst.style.display='none'; emp.style.display=''; return; }
+  lst.style.display='flex'; emp.style.display='none';
+  lst.innerHTML = patches.map((p,i) => {
+    const kb = p.size<1024 ? p.size+'B' : (p.size/1024).toFixed(1)+'KB';
+    const dc = p.syntaxOk===false ? 'sdot s-fail' :
+               p.testStatus==='pass' ? 'sdot s-pass' :
+               p.testStatus==='fail' ? 'sdot s-fail' :
+               p.testStatus==='run'  ? 'sdot s-run'  : 'sdot s-idle';
+    return `<div class="item" draggable="true" data-i="${i}"
+       ondragstart="pds(event,${i})" ondragover="pdov(event,${i})"
+       ondrop="pddr(event,${i})" ondragend="pde()">
+      <div class="grip"><svg width="8" height="12" viewBox="0 0 8 12"><circle cx="2" cy="2" r="1.4" fill="currentColor"/>
+      <circle cx="6" cy="2" r="1.4" fill="currentColor"/><circle cx="2" cy="6" r="1.4" fill="currentColor"/>
+      <circle cx="6" cy="6" r="1.4" fill="currentColor"/><circle cx="2" cy="10" r="1.4" fill="currentColor"/>
+      <circle cx="6" cy="10" r="1.4" fill="currentColor"/></svg></div>
+      <div><div class="iname">${esc(p.name)}</div>
+      <div class="imeta">${kb}${p.syntaxOk===false?' · <span style="color:var(--red)">syntax error</span>':''}</div></div>
+      <div class="${dc}"></div>
+      <div class="btns">
+        <button class="ib" onclick="pmv(${i},-1)" ${i===0?'disabled':''}>↑</button>
+        <button class="ib" onclick="pmv(${i},1)" ${i===patches.length-1?'disabled':''}>↓</button>
+        <button class="db" onclick="prm(${i})">✕</button>
+      </div>
+      <div class="num">${i+1}</div>
+    </div>`;
+  }).join('');
+}
+
+function pmv(i,d){const j=i+d;if(j<0||j>=patches.length)return;[patches[i],patches[j]]=[patches[j],patches[i]];renderPatches();}
+function prm(i){patches.splice(i,1);renderPatches();document.getElementById('prevsec').style.display='none';updateIntegrity();}
+function pds(e,i){dragSrc=i;e.currentTarget.classList.add('dragging');e.dataTransfer.effectAllowed='move';}
+function pdov(e,i){e.preventDefault();document.querySelectorAll('.item').forEach(el=>el.classList.remove('over'));if(i!==dragSrc)document.querySelector(`[data-i="${i}"]`).classList.add('over');}
+function pddr(e,i){e.preventDefault();if(dragSrc!==null&&dragSrc!==i){const[it]=patches.splice(dragSrc,1);patches.splice(i,0,it);renderPatches();}}
+function pde(){dragSrc=null;document.querySelectorAll('.item').forEach(el=>el.classList.remove('dragging','over'));}
+
+/* ═══════════════════════════════════════════
+   MERGE / INTEGRITY
+═══════════════════════════════════════════ */
+function buildMerged() {
+  const fn = (document.getElementById('fn').value.trim()||'update').replace(/\.js$/,'');
+  const now = new Date().toISOString().slice(0,10);
+  const SEP = '═'.repeat(52);
+  let out = `/* ${SEP}\n   ${fn}.js — merged patch bundle\n   generated : ${now}\n   patches   : ${patches.length}\n   sources   : ${patches.map(p=>p.name).join(', ')}\n   ${SEP} */\n`;
+  for (const p of patches) {
+    out += `\n\n/* ${'─'.repeat(22)} ${p.name} ${'─'.repeat(22)} */\n`;
+    out += p.raw;
+    if (!p.raw.endsWith('\n')) out += '\n';
+  }
+  return out;
+}
+
+function checkIntegrity(merged) {
+  let total=0,matched=0;
+  for (const p of patches) { total+=p.raw.length; if(merged.includes(p.raw)) matched+=p.raw.length; }
+  return total===0 ? 100 : (matched/total)*100;
+}
+
+function updateIntegrity() {
+  const bar = document.getElementById('integbar');
+  if (!lastMerged||!patches.length){bar.style.display='none';return;}
+  const pct = checkIntegrity(lastMerged);
+  bar.style.display='flex';
+  const fill=document.getElementById('integfill');
+  const val=document.getElementById('integval');
+  fill.style.width=pct.toFixed(2)+'%';
+  const col=pct>=99.9?'var(--grn)':pct>90?'var(--ylw)':'var(--red)';
+  fill.style.background=col; val.textContent=pct.toFixed(2)+'%'; val.style.color=col;
+}
+
+function preview(){
+  if(!patches.length)return;
+  lastMerged=buildMerged();
+  const lines=lastMerged.split('\n').length;
+  const bytes=new TextEncoder().encode(lastMerged).length;
+  const sz=bytes<1024?bytes+'B':(bytes/1024).toFixed(1)+'KB';
+  document.getElementById('stats').innerHTML=
+    `<div class="stat"><strong>${patches.length}</strong> src</div>
+     <div class="stat"><strong>${lines}</strong> lines</div>
+     <div class="stat"><strong>${sz}</strong></div>`;
+  document.getElementById('out').textContent=lastMerged;
+  document.getElementById('prevsec').style.display='';
+  document.getElementById('prevsec').scrollIntoView({behavior:'smooth',block:'start'});
+  updateIntegrity();
+}
+
+function doExport(){
+  if(!patches.length)return;
+  lastMerged=buildMerged();
+  const pct=checkIntegrity(lastMerged);
+  if(pct<99){toast('Integrity '+pct.toFixed(1)+'% — export aborted',1);return;}
+  const fn=(document.getElementById('fn').value.trim()||'update').replace(/\.js$/,'')+'.js';
+  const blob=new Blob([lastMerged],{type:'text/javascript'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=fn;a.click();
+  URL.revokeObjectURL(url);
+  toast('↓ '+fn+' ('+pct.toFixed(2)+'% integrity)');
+  document.getElementById('out').textContent=lastMerged;
+  document.getElementById('prevsec').style.display='';
+  updateIntegrity();
+}
+
+function doCopy(){
+  if(!lastMerged)lastMerged=buildMerged();
+  navigator.clipboard.writeText(lastMerged).then(()=>toast('⎘ copied'));
+}
+
+/* ═══════════════════════════════════════════
+   SANDBOX TEST CONSOLE
+═══════════════════════════════════════════ */
+function runTests(){
+  if(!patches.length)return;
+  if(!lastMerged)lastMerged=buildMerged();
+  document.getElementById('testsec').style.display='';
+  document.getElementById('testsec').scrollIntoView({behavior:'smooth',block:'start'});
+  setConsoleState('run');
+  patches.forEach(p=>p.testStatus='run');
+  renderPatches();
+  renderConsoleRows('run');
+  const sections=patches.map(p=>({name:p.name,code:p.raw}));
+  const iHTML=`<!DOCTYPE html><html><head><script>
+window.addEventListener('message',function(e){
+  if(!e.data||e.data.type!=='run')return;
+  var results=[];
+  e.data.sections.forEach(function(sec){
+    var t0=performance.now(),ok=false,err=null;
+    try{(new Function(sec.code))();ok=true;}catch(ex){err=ex.message||String(ex);}
+    results.push({name:sec.name,ok:ok,err:err,ms:+(performance.now()-t0).toFixed(2)});
+  });
+  parent.postMessage({type:'results',results:results},'*');
+});<\/script></head>
+<body>
+<div id="app"><div id="root"><div id="content">
+<header id="header"><nav id="nav"><a href="#" id="home-link">home</a></nav></header>
+<main id="main"><section id="hero"><h1 id="title">test</h1></section>
+<div id="container"><div id="wrapper"><ul id="list"></ul></div></div></main>
+<footer id="footer"></footer><div id="modal"></div><div id="overlay"></div>
+<div id="game-screen"><div id="hud"></div><div id="farm-grid"></div>
+<div id="winter-hub"></div><div id="fish-result"></div></div>
+</div></div></div></body></html>`;
+  const old=document.getElementById('sandbox-frame');if(old)old.remove();
+  const iframe=document.createElement('iframe');
+  iframe.id='sandbox-frame';iframe.sandbox='allow-scripts';
+  iframe.style.cssText='position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;pointer-events:none';
+  document.body.appendChild(iframe);
+  function onResult(e){
+    if(!e.data||e.data.type!=='results')return;
+    window.removeEventListener('message',onResult);
+    iframe.remove();
+    e.data.results.forEach(r=>{const p=patches.find(x=>x.name===r.name);if(p)p.testStatus=r.ok?'pass':'fail';});
+    testResults=e.data.results;
+    renderPatches();
+    renderConsoleRows('done',e.data.results);
+    setConsoleState('done',e.data.results);
+  }
+  window.addEventListener('message',onResult);
+  iframe.srcdoc=iHTML;
+  iframe.onload=()=>iframe.contentWindow.postMessage({type:'run',sections},'*');
+}
+
+function renderConsoleRows(state,results){
+  const body=document.getElementById('console-rows');
+  if(state==='run'){
+    body.innerHTML=patches.map(p=>`<div class="console-row">
+      <div class="cr-dot cr-run"></div>
+      <div><div class="cr-name">${esc(p.name)}</div></div>
+      <div class="cr-ms">running…</div></div>`).join('');return;
+  }
+  if(!results||!results.length)return;
+  body.innerHTML=results.map(r=>`<div class="console-row">
+    <div class="cr-dot ${r.ok?'cr-pass':'cr-fail'}"></div>
+    <div><div class="cr-name">${esc(r.name)}</div>
+    ${r.ok?'<div class="cr-ok">✓ executed without errors</div>':`<div class="cr-err">✗ ${esc(r.err||'unknown error')}</div>`}
+    </div><div class="cr-ms">${r.ms}ms</div></div>`).join('');
+}
+
+function setConsoleState(state,results){
+  const txt=document.getElementById('status-txt');
+  const pct=document.getElementById('status-pct');
+  ['b-idle','b-run','b-pass','b-fail'].forEach(id=>document.getElementById(id).style.display='none');
+  if(state==='run'){
+    document.getElementById('b-run').style.display='flex';
+    txt.textContent='▶ running tests…';txt.className='status-text st-run';pct.textContent='';return;
+  }
+  if(state==='done'&&results){
+    const pass=results.filter(r=>r.ok).length,fail=results.filter(r=>!r.ok).length,total=results.length;
+    document.getElementById('n-pass').textContent=pass;
+    document.getElementById('n-fail').textContent=fail;
+    if(pass)document.getElementById('b-pass').style.display='flex';
+    if(fail)document.getElementById('b-fail').style.display='flex';
+    if(!pass&&!fail)document.getElementById('b-idle').style.display='flex';
+    pct.textContent=total?Math.round((pass/total)*100)+'% pass rate':'';
+    if(fail===0){txt.textContent=`✓ all ${total} patches passed`;txt.className='status-text st-pass';}
+    else{txt.textContent=`✗ ${fail} of ${total} patch${total>1?'es':''} failed`;txt.className='status-text st-fail';}
+    return;
+  }
+  document.getElementById('b-idle').style.display='flex';
+  txt.textContent='— awaiting test run';txt.className='status-text st-idle';pct.textContent='';
+}
+
+/* ═══════════════════════════════════════════
+   GAME FILE LOADER
+═══════════════════════════════════════════ */
+const gdz = document.getElementById('gdz');
+const gfi = document.getElementById('gfi');
+gdz.addEventListener('dragover', e=>{e.preventDefault();gdz.classList.add('over');});
+gdz.addEventListener('dragleave', ()=>gdz.classList.remove('over'));
+gdz.addEventListener('drop', e=>{e.preventDefault();gdz.classList.remove('over');loadGameFiles(e.dataTransfer.files);});
+gfi.addEventListener('change', ()=>{loadGameFiles(gfi.files);gfi.value='';});
+
+const CORE_GAME_FILES = ['index.html','script.js','style.css','winter.js','fall_town.js','winterpatch.js','patcher.js'];
+
+function loadGameFiles(files) {
+  Array.from(files).forEach(file => {
+    const r = new FileReader();
+    r.onload = ev => {
+      gameFiles[file.name] = { name: file.name, raw: ev.target.result, size: file.size };
+      renderGameFiles();
       toast('+ ' + file.name);
     };
     r.readAsText(file);
   });
 }
 
-// ─────────────────────────────────────────────
-// Render list
-// ─────────────────────────────────────────────
-function render() {
-  const lst = document.getElementById('lst');
-  const emp = document.getElementById('emp');
-  document.getElementById('expbtn').disabled = patches.length === 0;
+function removeGameFile(name) {
+  delete gameFiles[name];
+  renderGameFiles();
+}
 
-  if (!patches.length) { lst.style.display = 'none'; emp.style.display = ''; return; }
-  lst.style.display = 'flex'; emp.style.display = 'none';
+function renderGameFiles() {
+  const wrap = document.getElementById('gfile-list-wrap');
+  const list = document.getElementById('gfile-list');
+  const keys = Object.keys(gameFiles);
+  const reqNote = document.getElementById('req-note');
 
-  lst.innerHTML = patches.map((p, i) => {
-    const kb = p.size < 1024 ? p.size + ' B' : (p.size / 1024).toFixed(1) + ' KB';
-    const tags = getTags(p);
-    return `
-    <div class="item" draggable="true" data-i="${i}"
-         ondragstart="ds(event,${i})" ondragover="dov(event,${i})"
-         ondrop="ddr(event,${i})" ondragend="de()">
-      <div class="grip">
-        <svg width="9" height="13" viewBox="0 0 9 13"><circle cx="2.5" cy="2" r="1.5" fill="currentColor"/>
-        <circle cx="6.5" cy="2" r="1.5" fill="currentColor"/><circle cx="2.5" cy="6.5" r="1.5" fill="currentColor"/>
-        <circle cx="6.5" cy="6.5" r="1.5" fill="currentColor"/><circle cx="2.5" cy="11" r="1.5" fill="currentColor"/>
-        <circle cx="6.5" cy="11" r="1.5" fill="currentColor"/></svg>
-      </div>
-      <div class="info">
-        <div class="name">${esc(p.name)}</div>
-        <div class="meta">
-          <span>${kb}</span>
-          ${p.parsed && p.parsed.version ? '<span>v' + esc(p.parsed.version) + '</span>' : ''}
-          ${tags}
-        </div>
-      </div>
-      <div class="btns">
-        <button class="ib" onclick="mv(${i},-1)" ${i===0?'disabled':''}>↑</button>
-        <button class="ib" onclick="mv(${i},1)"  ${i===patches.length-1?'disabled':''}>↓</button>
-        <button class="db" onclick="rm(${i})">✕</button>
-      </div>
-      <div style="font-size:9px;font-weight:700;background:var(--surf2);border:1px solid var(--br);
-           color:var(--mu);width:18px;height:18px;border-radius:3px;display:flex;
-           align-items:center;justify-content:center">${i+1}</div>
+  if (!keys.length) { wrap.style.display='none'; return; }
+  wrap.style.display='';
+
+  const hasIndex = !!gameFiles['index.html'];
+  const hasScript = !!gameFiles['script.js'];
+  const canLaunch = hasIndex && hasScript;
+
+  document.getElementById('launch-btn').disabled = !canLaunch;
+  reqNote.className = canLaunch ? 'req-note hide' : 'req-note';
+
+  list.innerHTML = keys.map(name => {
+    const f = gameFiles[name];
+    const isCore = CORE_GAME_FILES.includes(name);
+    const kb = f.size < 1024 ? f.size+'B' : (f.size/1024).toFixed(1)+'KB';
+    return `<div class="gfile-item${isCore?' core':''}">
+      <div class="gfile-dot"></div>
+      <div class="gfile-name" title="${esc(name)}">${esc(name)}</div>
+      <div class="gfile-sz">${kb}</div>
+      <button class="gfile-rm" onclick="removeGameFile('${esc(name)}')">✕</button>
     </div>`;
   }).join('');
 }
 
-function getTags(p) {
-  if (!p.isJson) return '<span class="tag t-js">JS</span>';
-  let t = '<span class="tag t-json">JSON</span>';
-  if (p.parsed) {
-    if (p.parsed.css) t += ' <span class="tag t-css">CSS</span>';
-    if (p.parsed.js)  t += ' <span class="tag t-js">JS</span>';
-    if (p.parsed.html && p.parsed.html.length) t += ' <span class="tag t-html">HTML</span>';
-  }
-  return t;
+/* ═══════════════════════════════════════════
+   GAME HTML BUILDER
+   Inlines all available files into one self-contained doc.
+   Adds console bridge + patch injection listener.
+═══════════════════════════════════════════ */
+function buildGameHTML() {
+  const indexF = gameFiles['index.html'];
+  if (!indexF) return null;
+  let html = indexF.raw;
+
+  // Inline CSS files
+  html = html.replace(/<link\s[^>]*href=["']([^"']+\.css)["'][^>]*>/gi, (match, href) => {
+    const fname = href.split('/').pop().split('?')[0];
+    const f = gameFiles[fname];
+    if (!f) return `<!-- ${fname} not loaded -->`;
+    return `<style data-src="${fname}">${f.raw}</style>`;
+  });
+
+  // Inline JS script tags (src only, not inline scripts)
+  html = html.replace(/<script\s[^>]*src=["']([^"']+\.js)["'][^>]*>\s*<\/script>/gi, (match, src) => {
+    const fname = src.split('/').pop().split('?')[0];
+    const f = gameFiles[fname];
+    if (!f) return `<!-- script: ${fname} not loaded — skipped -->`;
+    return `<script data-src="${fname}">${f.raw}<\/script>`;
+  });
+
+  // Bridge: intercept console + expose patch injector
+  // Injected right after <head> so it runs before everything
+  const bridge = `<script id="vf-bridge">
+(function(){
+var _log=console.log.bind(console),_warn=console.warn.bind(console),
+    _err=console.error.bind(console),_info=console.info.bind(console);
+function fwd(lvl,args){try{parent.postMessage({type:'game-log',level:lvl,msg:Array.from(args).map(function(a){try{return typeof a==='object'?JSON.stringify(a).slice(0,300):String(a);}catch(e){return String(a);}}).join(' ')},'*');}catch(e){}}
+console.log=function(){_log.apply(this,arguments);fwd('log',arguments);};
+console.warn=function(){_warn.apply(this,arguments);fwd('warn',arguments);};
+console.error=function(){_err.apply(this,arguments);fwd('error',arguments);};
+console.info=function(){_info.apply(this,arguments);fwd('info',arguments);};
+window.onerror=function(msg,src,line){fwd('error',['[uncaught] '+msg+(line?' line '+line:'')]);};
+window.addEventListener('unhandledrejection',function(e){fwd('error',['[promise] '+(e.reason||'rejected')]);});
+window.addEventListener('message',function(e){
+  if(!e.data||e.data.type!=='inject-patch')return;
+  var patches=e.data.patches;
+  var results=[];
+  patches.forEach(function(p){
+    var t0=performance.now(),ok=false,err=null;
+    try{(new Function(p.code))();ok=true;fwd('patch','✅ '+p.name+' injected OK');}
+    catch(ex){err=ex.message||String(ex);fwd('error','❌ '+p.name+': '+err);}
+    results.push({name:p.name,ok:ok,err:err,ms:+(performance.now()-t0).toFixed(2)});
+  });
+  parent.postMessage({type:'patch-results',results:results},'*');
+});
+})();
+<\/script>`;
+
+  html = html.replace('<head>', '<head>' + bridge);
+
+  // Remove external patcher.js references that try to fetch JSON files
+  // (patcher.js does fetch() which won't work in sandboxed srcdoc)
+  // We already inline it, but its fetch() calls will 404 silently
+  return html;
 }
 
-function mv(i, dir) {
-  const j = i + dir;
-  if (j < 0 || j >= patches.length) return;
-  [patches[i], patches[j]] = [patches[j], patches[i]];
-  render();
-}
-function rm(i) { patches.splice(i, 1); render(); document.getElementById('prevsec').style.display = 'none'; }
+/* ═══════════════════════════════════════════
+   GAME TRIAL LAUNCH
+═══════════════════════════════════════════ */
+function launchTrial() {
+  const html = buildGameHTML();
+  if (!html) { toast('index.html required', 1); return; }
 
-// ─────────────────────────────────────────────
-// Drag-to-reorder
-// ─────────────────────────────────────────────
-function ds(e, i) { dragSrc = i; e.currentTarget.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; }
-function dov(e, i) {
-  e.preventDefault();
-  document.querySelectorAll('.item').forEach(el => el.classList.remove('over'));
-  if (i !== dragSrc) document.querySelector(`[data-i="${i}"]`).classList.add('over');
-}
-function ddr(e, i) {
-  e.preventDefault();
-  if (dragSrc !== null && dragSrc !== i) {
-    const [item] = patches.splice(dragSrc, 1);
-    patches.splice(i, 0, item);
-    render();
-  }
-}
-function de() { dragSrc = null; document.querySelectorAll('.item').forEach(el => el.classList.remove('dragging','over')); }
+  // Remove old frame
+  const fw = document.getElementById('trial-frame-wrap');
+  const ph = document.getElementById('trial-placeholder');
+  const oldFrame = document.getElementById('game-frame');
+  if (oldFrame) oldFrame.remove();
 
-// ─────────────────────────────────────────────
-// Merge
-//
-// JSON patch  →  handled in 3 separate blocks:
-//   1) CSS: create <style>, set textContent (JSON.stringify = safe escaping)
-//   2) HTML ops: array literal via JSON.stringify, forEach apply
-//   3) JS: emit the js field RAW — it's already valid JS (IIFEs, etc.)
-//
-// JS file     →  emit RAW, untouched, verbatim
-//
-// Nothing is wrapped in an outer IIFE.
-// Nothing is indented or reformatted.
-// ─────────────────────────────────────────────
-function buildMerged() {
-  const fn = (document.getElementById('fn').value.trim() || 'update').replace(/\.js$/, '');
-  const now = new Date().toISOString().slice(0, 10);
-  const names = patches.map(p => p.name).join(', ');
+  // Create iframe
+  const iframe = document.createElement('iframe');
+  iframe.id = 'game-frame';
+  iframe.sandbox = 'allow-scripts allow-same-origin allow-forms';
+  iframe.setAttribute('allow', 'autoplay');
+  fw.appendChild(iframe);
+  if (ph) ph.style.display = 'none';
 
-  const SEP = '═'.repeat(55);
-  let out = `/* ${SEP}\n   ${fn}.js — Merged Patch Bundle\n   Generated: ${now}\n   Sources:   ${names}\n   ${SEP} */\n`;
+  // Wire message listener
+  window.removeEventListener('message', onGameMessage);
+  window.addEventListener('message', onGameMessage);
 
-  for (const p of patches) {
-    out += `\n\n/* ${'─'.repeat(24)} ${p.name} ${'─'.repeat(24)} */\n`;
+  // Write the HTML
+  iframe.srcdoc = html;
+  gameLoaded = true;
 
-    if (p.isJson && p.parsed) {
-      // ── 1. CSS ──────────────────────────────────────────────
-      if (p.parsed.css) {
-        // JSON.stringify produces a valid JS string literal.
-        // No manual escaping needed — handles \n, \t, quotes, unicode, everything.
-        out += `(function(){\n`;
-        out += `  var _s = document.createElement('style');\n`;
-        out += `  _s.setAttribute('data-patch', ${JSON.stringify(p.name)});\n`;
-        out += `  _s.textContent = ${JSON.stringify(p.parsed.css)};\n`;
-        out += `  document.head.appendChild(_s);\n`;
-        out += `})();\n`;
-      }
+  // Update UI
+  setBadge('trial-status-badge', '● live', 'live');
+  document.getElementById('inject-btn').style.display = '';
+  document.getElementById('inject-btn').disabled = patches.length === 0;
+  document.getElementById('reload-btn').style.display = '';
+  document.getElementById('reload-btn').disabled = false;
+  document.getElementById('trial-patch-badge').style.display = '';
+  document.getElementById('trial-patch-badge').textContent = 'no patch injected';
+  document.getElementById('trial-patch-badge').className = 'frame-badge';
 
-      // ── 2. HTML ops ─────────────────────────────────────────
-      if (p.parsed.html && p.parsed.html.length) {
-        // JSON.stringify the whole array — handles all string content safely.
-        out += `(function(){\n`;
-        out += `  var ops = ${JSON.stringify(p.parsed.html)};\n`;
-        out += `  ops.forEach(function(op){\n`;
-        out += `    var el = document.querySelector(op.selector);\n`;
-        out += `    if (!el) { console.warn('[${fn}] selector not found:', op.selector); return; }\n`;
-        out += `    var pos = op.position || 'afterend';\n`;
-        out += `    if      (op.action === 'replace')   { el.outerHTML = op.content; }\n`;
-        out += `    else if (op.action === 'innerHTML')  { el.innerHTML = op.content; }\n`;
-        out += `    else if (op.action === 'insert')     { el.insertAdjacentHTML(pos, op.content); }\n`;
-        out += `    else if (op.action === 'remove')     { el.remove(); }\n`;
-        out += `    else if (op.action === 'attr')       { var kv=op.content.split('='); el.setAttribute(kv[0].trim(),kv[1].trim()); }\n`;
-        out += `  });\n`;
-        out += `})();\n`;
-      }
+  addGameLog('info', '▶ Game trial launched — ' + Object.keys(gameFiles).length + ' files inlined');
+  document.getElementById('inject-result').className = 'inject-result';
 
-      // ── 3. JS ────────────────────────────────────────────────
-      // Emit completely raw — zero modification.
-      // The js field is already valid JS code (IIFEs, expressions, etc.).
-      // Do NOT wrap, indent, or escape anything.
-      if (p.parsed.js) {
-        out += p.parsed.js;
-        if (!p.parsed.js.endsWith('\n')) out += '\n';
-      }
-
-    } else {
-      // ── Raw .js file — completely verbatim, zero modification ──
-      out += p.raw;
-      if (!p.raw.endsWith('\n')) out += '\n';
-    }
-  }
-
-  return out;
+  toast('🌾 Game trial launched!');
 }
 
-// ─────────────────────────────────────────────
-// Preview — show plain text, no HTML markup
-// ─────────────────────────────────────────────
-function preview() {
+function reloadTrial() {
+  if (!gameLoaded) return;
+  addGameLog('info', '↺ Reloading game trial…');
+  launchTrial();
+}
+
+/* ═══════════════════════════════════════════
+   PATCH INJECTION INTO LIVE GAME
+═══════════════════════════════════════════ */
+function injectPatch() {
+  const iframe = document.getElementById('game-frame');
+  if (!iframe) { toast('Launch the trial first', 1); return; }
   if (!patches.length) { toast('No patches loaded', 1); return; }
-  lastMerged = buildMerged();
-  const lines = lastMerged.split('\n').length;
-  const bytes = new TextEncoder().encode(lastMerged).length;
-  const sz = bytes < 1024 ? bytes + ' B' : (bytes / 1024).toFixed(1) + ' KB';
-
-  document.getElementById('stats').innerHTML =
-    `<div class="stat"><strong>${patches.length}</strong> sources</div>
-     <div class="stat"><strong>${lines}</strong> lines</div>
-     <div class="stat"><strong>${sz}</strong></div>`;
-
-  // textContent — plain text, no HTML parsing, no escaping issues, no "tok-comment"
-  document.getElementById('out').textContent = lastMerged;
-  document.getElementById('prevsec').style.display = '';
-  document.getElementById('prevsec').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-// ─────────────────────────────────────────────
-// Export
-// ─────────────────────────────────────────────
-function doExport() {
-  if (!patches.length) return;
-  lastMerged = buildMerged();
-  const fn = (document.getElementById('fn').value.trim() || 'update').replace(/\.js$/, '') + '.js';
-  const blob = new Blob([lastMerged], { type: 'text/javascript' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = fn; a.click();
-  URL.revokeObjectURL(url);
-  toast('Downloaded ' + fn);
-  // Also update preview
-  document.getElementById('out').textContent = lastMerged;
-  document.getElementById('prevsec').style.display = '';
-}
-
-// ─────────────────────────────────────────────
-// Copy
-// ─────────────────────────────────────────────
-function doCopy() {
-  // Use lastMerged string directly — not innerHTML, not textContent
   if (!lastMerged) lastMerged = buildMerged();
-  navigator.clipboard.writeText(lastMerged).then(() => toast('Copied'));
+
+  const pList = patches.map(p => ({ name: p.name, code: p.raw }));
+
+  iframe.contentWindow.postMessage({ type: 'inject-patch', patches: pList }, '*');
+  setBadge('trial-patch-badge', '⚡ injecting…', '');
+  addGameLog('patch', '⚡ Injecting ' + patches.length + ' patch' + (patches.length>1?'es':'') + '…');
 }
 
-// ─────────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────────
-function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function onGameMessage(e) {
+  if (!e.data) return;
+  if (e.data.type === 'game-log') {
+    addGameLog(e.data.level, e.data.msg);
+  }
+  if (e.data.type === 'patch-results') {
+    handlePatchResults(e.data.results);
+  }
+}
+
+function handlePatchResults(results) {
+  const pass = results.filter(r=>r.ok).length;
+  const fail = results.filter(r=>!r.ok).length;
+  const total = results.length;
+
+  const ir = document.getElementById('inject-result');
+
+  if (fail === 0) {
+    setBadge('trial-patch-badge', `✓ ${total} patch${total>1?'es':''} active`, 'live');
+    ir.textContent = `✓ All ${total} patch${total>1?'es':''} injected successfully — running live in game`;
+    ir.className = 'inject-result show ok';
+    toast('✓ All patches injected!');
+  } else {
+    setBadge('trial-patch-badge', `✗ ${fail} failed`, 'err');
+    ir.textContent = `✗ ${fail} of ${total} patch${total>1?'es':''} failed — check game console below`;
+    ir.className = 'inject-result show bad';
+    toast(`✗ ${fail} patch${fail>1?'es':''} failed`, 1);
+  }
+
+  results.forEach(r => {
+    const p = patches.find(x=>x.name===r.name);
+    if (p) p.testStatus = r.ok ? 'pass' : 'fail';
+    addGameLog(r.ok ? 'patch' : 'error',
+      (r.ok ? '✅ ' : '❌ ') + r.name + ' — ' + (r.ok ? r.ms+'ms' : r.err));
+  });
+  renderPatches();
+}
+
+/* ═══════════════════════════════════════════
+   GAME LOG
+═══════════════════════════════════════════ */
+let logOpen = false;
+
+function addGameLog(level, msg) {
+  const now = new Date();
+  const time = now.toTimeString().slice(0,8);
+  gameLogs.push({ level, msg, time });
+  // Cap at 200 entries
+  if (gameLogs.length > 200) gameLogs.shift();
+
+  const count = document.getElementById('log-count');
+  count.textContent = gameLogs.length + ' entr' + (gameLogs.length===1?'y':'ies');
+
+  const body = document.getElementById('gamelog-body');
+  const row = document.createElement('div');
+  row.className = 'log-row';
+  const levelCls = level==='patch' ? 'log-patch' : 'log-'+level;
+  row.innerHTML = `<span class="log-time">${esc(time)}</span><span class="log-msg ${levelCls}">${esc(String(msg).slice(0,400))}</span>`;
+  body.appendChild(row);
+  if (logOpen) body.scrollTop = body.scrollHeight;
+}
+
+function toggleGameLog() {
+  logOpen = !logOpen;
+  document.getElementById('gamelog-body').className = 'gamelog-body' + (logOpen ? ' open' : '');
+  document.getElementById('log-toggle-lbl').textContent = logOpen ? '▲ collapse' : '▼ expand';
+}
+
+function clearGameLog() {
+  gameLogs.length = 0;
+  document.getElementById('gamelog-body').innerHTML = '';
+  document.getElementById('log-count').textContent = '0 entries';
+}
+
+/* ═══════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════ */
+function setBadge(id, text, cls) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = 'frame-badge' + (cls ? ' ' + cls : '');
+}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 let _tt;
 function toast(msg, err) {
@@ -428,8 +887,11 @@ function toast(msg, err) {
   t.style.borderColor = err ? 'var(--red)' : 'var(--grn)';
   t.classList.add('on');
   clearTimeout(_tt);
-  _tt = setTimeout(() => t.classList.remove('on'), 2000);
+  _tt = setTimeout(()=>t.classList.remove('on'), 2500);
 }
+
+// Keep inject button in sync with patches state
+const origRender = renderPatches;
 </script>
 </body>
 </html>
