@@ -57,6 +57,11 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;
 .drop-game:hover,.drop-game.over{border-color:var(--blu);background:var(--blu-d)}
 .tag-pill-blu{color:var(--blu);background:var(--blu-d);border-color:rgba(96,165,250,0.25)}
 
+/* extra patch drop */
+.drop-extra{border-color:rgba(167,139,250,0.25)}
+.drop-extra:hover,.drop-extra.over{border-color:var(--pur);background:var(--pur-d)}
+.tag-pill-pur{color:var(--pur);background:var(--pur-d);border-color:rgba(167,139,250,0.25)}
+
 /* warn */
 .warn{background:var(--acc-d);border:1px solid rgba(249,115,22,.2);border-radius:var(--r);padding:5px 11px;font-size:10.5px;color:var(--acc);margin-top:6px;display:none}
 .warn.show{display:block}
@@ -116,6 +121,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;
 .b-inject{background:var(--grn);color:#000;border-color:var(--grn);font-weight:800}
 .b-inject:hover{background:#16a34a}
 .b-inject:disabled{opacity:.35;cursor:not-allowed}
+.b-inject.live-disabled{opacity:.25;cursor:not-allowed;pointer-events:none}
 
 /* integrity */
 .integ-bar{margin-top:7px;background:var(--surf);border:1px solid var(--br);border-radius:var(--r);padding:8px 12px;display:flex;align-items:center;gap:10px}
@@ -162,6 +168,65 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;
 .st-pass{color:var(--grn)}.st-fail{color:var(--red)}.st-idle{color:var(--mu)}.st-run{color:var(--ylw)}
 .pct{font-size:10px;color:var(--mu2)}
 
+/* ── VERSION SWITCHER ── */
+.ver-sw{display:flex;gap:0;border:1px solid var(--br);border-radius:var(--r);overflow:hidden;margin-bottom:14px;width:fit-content}
+.vs-btn{background:transparent;border:none;color:var(--mu);font-family:var(--mono);font-size:11px;font-weight:700;padding:8px 16px;cursor:pointer;transition:all .15s;letter-spacing:.5px;display:flex;align-items:center;gap:6px}
+.vs-btn + .vs-btn{border-left:1px solid var(--br)}
+.vs-btn:hover{background:var(--surf2);color:var(--tx)}
+.vs-btn.vs-active{background:var(--surf2);color:var(--tx)}
+.vs-btn.vs-active.vs-local{color:var(--blu)}
+.vs-btn.vs-active.vs-live{color:var(--grn)}
+.vs-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.vs-local-dot{background:var(--blu)}
+.vs-live-dot{background:var(--grn);animation:pulse 2s ease-in-out infinite}
+
+/* live mode panel */
+.live-panel{background:var(--surf);border:1px solid rgba(34,197,94,.2);border-radius:var(--r2);padding:14px 16px;display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.live-panel-ico{font-size:20px;flex-shrink:0}
+.live-panel-info{flex:1}
+.live-panel-url{font-size:11.5px;font-weight:700;color:var(--grn);margin-bottom:3px}
+.live-panel-note{font-size:10px;color:var(--mu)}
+.live-no-inject{background:var(--surf2);border:1px solid var(--br);border-radius:var(--r);padding:7px 11px;font-size:10.5px;color:var(--mu2);margin-top:8px;display:flex;align-items:center;gap:7px}
+
+/* ── EXTRA GAME PATCHES ── */
+.xpatch-list{display:flex;flex-direction:column;gap:5px;margin-top:8px}
+.xpatch-item{background:var(--surf);border:1px solid rgba(167,139,250,.2);border-radius:var(--r);padding:7px 12px;display:flex;align-items:center;gap:9px;font-size:11px}
+.xpatch-dot{width:6px;height:6px;border-radius:50%;background:var(--pur);flex-shrink:0}
+.xpatch-name{font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.xpatch-sz{font-size:9.5px;color:var(--mu)}
+.xpatch-rm{background:transparent;border:none;color:var(--mu);cursor:pointer;font-size:11px;padding:0 2px}
+.xpatch-rm:hover{color:var(--red)}
+
+/* ── PATCH TOGGLE PANEL ── */
+.ptoggle-wrap{background:var(--surf);border:1px solid var(--br);border-radius:var(--r2);overflow:hidden;margin-top:10px}
+.ptoggle-hd{padding:9px 13px;border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ptoggle-title{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu2)}
+.ptoggle-note{font-size:9.5px;color:var(--mu)}
+.ptoggle-body{padding:8px}
+.ptoggle-list{display:flex;flex-direction:column;gap:5px}
+.ptoggle-item{display:flex;align-items:center;gap:10px;background:var(--surf2);border:1px solid var(--br);border-radius:var(--r);padding:8px 12px;transition:border-color .15s}
+.ptoggle-item:hover{border-color:var(--br2)}
+.ptoggle-item.pt-merged{border-color:rgba(249,115,22,.2)}
+.ptoggle-item.pt-extra{border-color:rgba(167,139,250,.2)}
+.ptoggle-item.pt-off{opacity:.45}
+.ptoggle-left{flex:1;min-width:0}
+.ptoggle-name{font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ptoggle-sub{font-size:9.5px;color:var(--mu2);margin-top:1px}
+.ptoggle-badge{font-size:8.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:2px 6px;border-radius:2px;white-space:nowrap;flex-shrink:0}
+.pt-badge-merged{background:var(--acc-d);color:var(--acc);border:1px solid rgba(249,115,22,.2)}
+.pt-badge-extra{background:var(--pur-d);color:var(--pur);border:1px solid rgba(167,139,250,.2)}
+/* toggle switch */
+.tsw{position:relative;width:36px;height:20px;flex-shrink:0;cursor:pointer}
+.tsw-track{position:absolute;inset:0;background:var(--surf3);border:1px solid var(--br2);border-radius:10px;transition:all .2s}
+.tsw.on .tsw-track{background:var(--grn);border-color:var(--grn)}
+.tsw-thumb{position:absolute;top:3px;left:3px;width:12px;height:12px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.tsw.on .tsw-thumb{left:19px}
+.ptoggle-footer{padding:8px;border-top:1px solid var(--br);display:flex;align-items:center;gap:8px}
+.b-reinject{background:transparent;color:var(--grn);border-color:rgba(34,197,94,.3);font-size:10.5px;padding:6px 12px}
+.b-reinject:hover{background:var(--grn-d);border-color:var(--grn)}
+.b-reinject:disabled{opacity:.3;cursor:not-allowed;pointer-events:none}
+.ptoggle-status{font-size:10px;color:var(--mu);flex:1}
+
 /* ── GAME TRIAL ── */
 .trial-wrap{background:var(--surf);border:1px solid var(--br);border-radius:var(--r2);overflow:hidden}
 .trial-hd{padding:9px 13px;border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
@@ -174,12 +239,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;
 }
 .trial-placeholder-ico{font-size:36px;opacity:.3}
 iframe#game-frame{width:100%;height:640px;border:none;display:block;background:#1a1f2a}
-.frame-overlay{
-  position:absolute;top:0;left:0;right:0;
-  background:linear-gradient(to bottom,rgba(8,10,15,0.85) 0%,transparent 100%);
-  padding:8px 12px;display:flex;align-items:center;gap:8px;z-index:10;pointer-events:none
-}
-.frame-overlay .btn{pointer-events:all}
 .frame-badge{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:3px;background:rgba(8,10,15,.8);border:1px solid var(--br2);color:var(--mu2)}
 .frame-badge.live{color:var(--grn);border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08)}
 .frame-badge.err{color:var(--red);border-color:rgba(248,113,113,.3)}
@@ -209,6 +268,7 @@ iframe#game-frame{width:100%;height:640px;border:none;display:block;background:#
 .req-note.hide{display:none}
 
 .gap{margin-top:2rem}
+.gap-sm{margin-top:1rem}
 
 .toast{position:fixed;bottom:20px;right:20px;background:var(--surf2);border:1px solid;font-family:var(--mono);font-size:11px;padding:8px 14px;border-radius:var(--r);opacity:0;transform:translateY(5px);transition:opacity .2s,transform .2s;pointer-events:none;z-index:999}
 .toast.on{opacity:1;transform:none}
@@ -301,22 +361,64 @@ iframe#game-frame{width:100%;height:640px;border:none;display:block;background:#
 
   <!-- ══ 05 GAME TRIAL ══ -->
   <div class="gap">
-    <div class="lbl"><span>05</span> game trial <span style="color:var(--mu);font-size:9px;text-transform:none;letter-spacing:0">drop game files to run live</span></div>
+    <div class="lbl"><span>05</span> game trial <span style="color:var(--mu);font-size:9px;text-transform:none;letter-spacing:0">local files or live build</span></div>
 
-    <!-- Game file loader -->
-    <div class="drop drop-game" id="gdz">
-      <input type="file" id="gfi" multiple accept=".html,.css,.js,.json">
-      <span class="drop-ico">🌾</span>
-      <div class="drop-t">Drop Valley Farm source files here</div>
-      <div class="drop-s">index.html · script.js · style.css · winter.js · fall_town.js · etc.</div>
-      <div class="tag-pill tag-pill-blu">⬡ .html .css .js accepted</div>
-    </div>
-    <div class="req-note hide" id="req-note">⚠ index.html and script.js are required to launch the trial</div>
-
-    <div id="gfile-list-wrap" style="display:none">
-      <div class="gfile-list" id="gfile-list"></div>
+    <!-- ── VERSION SWITCHER ── -->
+    <div class="ver-sw">
+      <button class="vs-btn vs-local vs-active" id="vs-local-btn" onclick="setGameSource('local')">
+        <div class="vs-dot vs-local-dot"></div> 📁 Local Files
+      </button>
+      <button class="vs-btn vs-live" id="vs-live-btn" onclick="setGameSource('live')">
+        <div class="vs-dot vs-live-dot"></div> 🌐 valley-farm.vercel.app
+      </button>
     </div>
 
+    <!-- ── LOCAL SECTION ── -->
+    <div id="local-section">
+      <div class="drop drop-game" id="gdz">
+        <input type="file" id="gfi" multiple accept=".html,.css,.js,.json">
+        <span class="drop-ico">🌾</span>
+        <div class="drop-t">Drop Valley Farm source files here</div>
+        <div class="drop-s">index.html · script.js · style.css · winter.js · fall_town.js · etc.</div>
+        <div class="tag-pill tag-pill-blu">⬡ .html .css .js accepted</div>
+      </div>
+      <div class="req-note hide" id="req-note">⚠ index.html and script.js are required to launch the trial</div>
+      <div id="gfile-list-wrap" style="display:none">
+        <div class="gfile-list" id="gfile-list"></div>
+      </div>
+    </div>
+
+    <!-- ── LIVE SECTION ── -->
+    <div id="live-section" style="display:none">
+      <div class="live-panel">
+        <div class="live-panel-ico">🌐</div>
+        <div class="live-panel-info">
+          <div class="live-panel-url">https://valley-farm.vercel.app</div>
+          <div class="live-panel-note">Loads the live production build directly in the trial frame</div>
+        </div>
+      </div>
+      <div class="live-no-inject">
+        <span style="color:var(--ylw)">⚠</span>
+        <span>Patch injection is disabled for the live version — cross-origin security prevents script injection. Switch to Local Files to use inject.</span>
+      </div>
+    </div>
+
+    <!-- ── EXTRA GAME PATCHES ── -->
+    <div class="gap-sm">
+      <div class="lbl"><span style="color:var(--pur)">+</span> extra game patches <span style="color:var(--mu);font-size:9px;text-transform:none;letter-spacing:0">injected alongside merged output · optional</span></div>
+      <div class="drop drop-extra" id="edz">
+        <input type="file" id="efi" multiple accept=".js">
+        <span class="drop-ico">🔧</span>
+        <div class="drop-t">Drop extra .js patches for the game trial</div>
+        <div class="drop-s">These run in the trial frame in addition to the merged patch</div>
+        <div class="tag-pill tag-pill-pur">⬡ game-preview only</div>
+      </div>
+      <div id="xpatch-list-wrap" style="display:none">
+        <div class="xpatch-list" id="xpatch-list"></div>
+      </div>
+    </div>
+
+    <!-- ── LAUNCH CONTROLS ── -->
     <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center">
       <button class="btn b-launch" id="launch-btn" onclick="launchTrial()" disabled>▶ Launch Game Trial</button>
       <button class="btn b-inject" id="inject-btn" onclick="injectPatch()" disabled style="display:none">⚡ Inject Merged Patch</button>
@@ -324,20 +426,36 @@ iframe#game-frame{width:100%;height:640px;border:none;display:block;background:#
       <button class="btn" onclick="clearGameLog()" style="color:var(--mu);border-color:var(--br);font-size:10px;padding:5px 10px">⌫ clear log</button>
     </div>
 
-    <!-- iframe + log -->
+    <!-- ── PATCH TOGGLE PANEL (shown after injection) ── -->
+    <div class="ptoggle-wrap" id="ptoggle-wrap" style="display:none">
+      <div class="ptoggle-hd">
+        <div class="ptoggle-title">💉 active injections</div>
+        <div class="ptoggle-note">Toggle patches on/off · Reinject to apply changes</div>
+      </div>
+      <div class="ptoggle-body">
+        <div class="ptoggle-list" id="ptoggle-list"></div>
+      </div>
+      <div class="ptoggle-footer">
+        <button class="btn b-reinject" id="reinject-btn" onclick="reinjectActive()">↺ Reload &amp; Reinject Active</button>
+        <div class="ptoggle-status" id="ptoggle-status"></div>
+      </div>
+    </div>
+
+    <!-- ── iframe + log ── -->
     <div class="trial-wrap" id="trial-wrap" style="margin-top:10px">
       <div class="trial-hd">
         <div class="trial-title">🌾 valley farm — trial environment</div>
         <div class="trial-controls">
           <div class="frame-badge" id="trial-status-badge">not launched</div>
           <div class="frame-badge" id="trial-patch-badge" style="display:none">no patch injected</div>
+          <div class="frame-badge" id="trial-source-badge" style="color:var(--mu)">local</div>
         </div>
       </div>
       <div class="trial-frame-wrap" id="trial-frame-wrap">
         <div class="trial-placeholder" id="trial-placeholder">
           <div class="trial-placeholder-ico">🌾</div>
-          <div>Load game files above and click <strong>Launch Game Trial</strong></div>
-          <div style="font-size:10.5px;color:var(--mu)">Required: index.html + script.js · Recommended: style.css, winter.js, fall_town.js</div>
+          <div>Load game files (or select live) and click <strong>Launch Game Trial</strong></div>
+          <div style="font-size:10.5px;color:var(--mu)">Local: requires index.html + script.js · Live: loads valley-farm.vercel.app directly</div>
         </div>
       </div>
 
@@ -366,9 +484,15 @@ const patches = [];
 let dragSrc = null;
 let lastMerged = '';
 let testResults = [];
-const gameFiles = {};   // filename → { name, raw, size }
+const gameFiles = {};        // filename → { name, raw, size }
 let gameLoaded = false;
 const gameLogs = [];
+let gameSource = 'local';    // 'local' | 'live'
+
+const extraGamePatches = []; // { id, name, raw, size } — extra patches for trial only
+let injectedSet = [];        // [{id, name, code, type}] — last injected; drives toggle panel
+const patchToggles = {};     // id → boolean (enabled)
+let pendingInject = null;    // patches to inject after next frame load
 
 /* ═══════════════════════════════════════════
    PATCH DROP ZONE
@@ -408,6 +532,11 @@ function renderPatches() {
   const emp = document.getElementById('pemp');
   const has = patches.length > 0;
   ['expbtn','tstbtn','prebtn'].forEach(id=>document.getElementById(id).disabled=!has);
+  // Update inject button — only enabled in local mode
+  const injectBtn = document.getElementById('inject-btn');
+  if (injectBtn.style.display !== 'none') {
+    injectBtn.disabled = !has || gameSource === 'live';
+  }
   if (!has) { lst.style.display='none'; emp.style.display=''; return; }
   lst.style.display='flex'; emp.style.display='none';
   lst.innerHTML = patches.map((p,i) => {
@@ -608,6 +737,48 @@ function setConsoleState(state,results){
 }
 
 /* ═══════════════════════════════════════════
+   VERSION SWITCHER
+═══════════════════════════════════════════ */
+function setGameSource(src) {
+  gameSource = src;
+  const localBtn = document.getElementById('vs-local-btn');
+  const liveBtn  = document.getElementById('vs-live-btn');
+  const localSec = document.getElementById('local-section');
+  const liveSec  = document.getElementById('live-section');
+  const sourceBadge = document.getElementById('trial-source-badge');
+  const injectBtn = document.getElementById('inject-btn');
+
+  if (src === 'live') {
+    localBtn.classList.remove('vs-active');
+    liveBtn.classList.add('vs-active');
+    localSec.style.display = 'none';
+    liveSec.style.display  = '';
+    // Launch button always enabled for live
+    document.getElementById('launch-btn').disabled = false;
+    sourceBadge.textContent = '🌐 live';
+    sourceBadge.style.color = 'var(--grn)';
+    // Disable inject in live mode
+    if (injectBtn.style.display !== 'none') {
+      injectBtn.disabled = true;
+      injectBtn.title = 'Injection not available for live version (cross-origin)';
+    }
+  } else {
+    liveBtn.classList.remove('vs-active');
+    localBtn.classList.add('vs-active');
+    liveSec.style.display  = 'none';
+    localSec.style.display = '';
+    sourceBadge.textContent = '📁 local';
+    sourceBadge.style.color = 'var(--mu2)';
+    // Re-check launch eligibility based on local files
+    renderGameFiles();
+    if (injectBtn.style.display !== 'none') {
+      injectBtn.disabled = patches.length === 0;
+      injectBtn.title = '';
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════
    GAME FILE LOADER
 ═══════════════════════════════════════════ */
 const gdz = document.getElementById('gdz');
@@ -649,8 +820,10 @@ function renderGameFiles() {
   const hasScript = !!gameFiles['script.js'];
   const canLaunch = hasIndex && hasScript;
 
-  document.getElementById('launch-btn').disabled = !canLaunch;
-  reqNote.className = canLaunch ? 'req-note hide' : 'req-note';
+  if (gameSource === 'local') {
+    document.getElementById('launch-btn').disabled = !canLaunch;
+  }
+  reqNote.className = (canLaunch || gameSource !== 'local') ? 'req-note hide' : 'req-note';
 
   list.innerHTML = keys.map(name => {
     const f = gameFiles[name];
@@ -666,9 +839,58 @@ function renderGameFiles() {
 }
 
 /* ═══════════════════════════════════════════
+   EXTRA GAME PATCH LOADER
+═══════════════════════════════════════════ */
+const edz = document.getElementById('edz');
+const efi = document.getElementById('efi');
+edz.addEventListener('dragover', e=>{e.preventDefault();edz.classList.add('over');});
+edz.addEventListener('dragleave', ()=>edz.classList.remove('over'));
+edz.addEventListener('drop', e=>{e.preventDefault();edz.classList.remove('over');loadExtraPatches(e.dataTransfer.files);});
+efi.addEventListener('change', ()=>{loadExtraPatches(efi.files);efi.value='';});
+
+function loadExtraPatches(files) {
+  Array.from(files).forEach(file => {
+    if (!file.name.toLowerCase().endsWith('.js')) {
+      toast('Only .js accepted for extra patches', 1); return;
+    }
+    const r = new FileReader();
+    r.onload = ev => {
+      // Replace if same name
+      const existing = extraGamePatches.findIndex(p => p.name === file.name);
+      const entry = { id: 'xp-' + Date.now() + Math.random(), name: file.name, raw: ev.target.result, size: file.size };
+      if (existing >= 0) extraGamePatches[existing] = entry;
+      else extraGamePatches.push(entry);
+      renderExtraPatches();
+      toast('+ ' + file.name + ' (game patch)');
+    };
+    r.readAsText(file);
+  });
+}
+
+function removeExtraPatch(id) {
+  const idx = extraGamePatches.findIndex(p => p.id === id);
+  if (idx >= 0) extraGamePatches.splice(idx, 1);
+  renderExtraPatches();
+}
+
+function renderExtraPatches() {
+  const wrap = document.getElementById('xpatch-list-wrap');
+  const list = document.getElementById('xpatch-list');
+  if (!extraGamePatches.length) { wrap.style.display='none'; return; }
+  wrap.style.display='';
+  list.innerHTML = extraGamePatches.map(p => {
+    const kb = p.size < 1024 ? p.size+'B' : (p.size/1024).toFixed(1)+'KB';
+    return `<div class="xpatch-item">
+      <div class="xpatch-dot"></div>
+      <div class="xpatch-name" title="${esc(p.name)}">${esc(p.name)}</div>
+      <div class="xpatch-sz">${kb}</div>
+      <button class="xpatch-rm" onclick="removeExtraPatch('${p.id}')">✕</button>
+    </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════
    GAME HTML BUILDER
-   Inlines all available files into one self-contained doc.
-   Adds console bridge + patch injection listener.
 ═══════════════════════════════════════════ */
 function buildGameHTML() {
   const indexF = gameFiles['index.html'];
@@ -683,7 +905,7 @@ function buildGameHTML() {
     return `<style data-src="${fname}">${f.raw}</style>`;
   });
 
-  // Inline JS script tags (src only, not inline scripts)
+  // Inline JS script tags (src only)
   html = html.replace(/<script\s[^>]*src=["']([^"']+\.js)["'][^>]*>\s*<\/script>/gi, (match, src) => {
     const fname = src.split('/').pop().split('?')[0];
     const f = gameFiles[fname];
@@ -691,8 +913,7 @@ function buildGameHTML() {
     return `<script data-src="${fname}">${f.raw}<\/script>`;
   });
 
-  // Bridge: intercept console + expose patch injector
-  // Injected right after <head> so it runs before everything
+  // Bridge: console intercept + patch injection listener
   const bridge = `<script id="vf-bridge">
 (function(){
 var _log=console.log.bind(console),_warn=console.warn.bind(console),
@@ -720,10 +941,6 @@ window.addEventListener('message',function(e){
 <\/script>`;
 
   html = html.replace('<head>', '<head>' + bridge);
-
-  // Remove external patcher.js references that try to fetch JSON files
-  // (patcher.js does fetch() which won't work in sandboxed srcdoc)
-  // We already inline it, but its fetch() calls will 404 silently
   return html;
 }
 
@@ -731,32 +948,67 @@ window.addEventListener('message',function(e){
    GAME TRIAL LAUNCH
 ═══════════════════════════════════════════ */
 function launchTrial() {
-  const html = buildGameHTML();
-  if (!html) { toast('index.html required', 1); return; }
-
-  // Remove old frame
   const fw = document.getElementById('trial-frame-wrap');
   const ph = document.getElementById('trial-placeholder');
   const oldFrame = document.getElementById('game-frame');
   if (oldFrame) oldFrame.remove();
 
-  // Create iframe
   const iframe = document.createElement('iframe');
   iframe.id = 'game-frame';
+
+  if (gameSource === 'live') {
+    // Load live version via URL
+    iframe.src = 'https://valley-farm.vercel.app';
+    iframe.setAttribute('allow', 'autoplay');
+    iframe.style.cssText = 'width:100%;height:640px;border:none;display:block;background:#1a1f2a';
+    fw.appendChild(iframe);
+    if (ph) ph.style.display = 'none';
+    setBadge('trial-status-badge', '🌐 live (vercel)', 'live');
+    setBadge('trial-source-badge', '🌐 live', '');
+    document.getElementById('trial-source-badge').style.color = 'var(--grn)';
+    // Hide inject for live
+    document.getElementById('inject-btn').style.display = 'none';
+    document.getElementById('reload-btn').style.display = '';
+    document.getElementById('reload-btn').disabled = false;
+    document.getElementById('trial-patch-badge').style.display = 'none';
+    document.getElementById('ptoggle-wrap').style.display = 'none';
+    addGameLog('info', '🌐 Live trial launched — valley-farm.vercel.app');
+    toast('🌐 Live version launched!');
+    gameLoaded = true;
+    return;
+  }
+
+  // Local mode
+  const html = buildGameHTML();
+  if (!html) { toast('index.html required', 1); return; }
+
   iframe.sandbox = 'allow-scripts allow-same-origin allow-forms';
   iframe.setAttribute('allow', 'autoplay');
+
+  // Handle pending inject after reload
+  iframe.onload = () => {
+    if (pendingInject && pendingInject.length) {
+      const pi = pendingInject;
+      pendingInject = null;
+      setTimeout(() => {
+        const f = document.getElementById('game-frame');
+        if (f) {
+          f.contentWindow.postMessage({ type: 'inject-patch', patches: pi }, '*');
+          addGameLog('info', `↺ Re-injecting ${pi.length} patch${pi.length>1?'es':''} after reload…`);
+        }
+      }, 500);
+    }
+  };
+
   fw.appendChild(iframe);
   if (ph) ph.style.display = 'none';
 
-  // Wire message listener
   window.removeEventListener('message', onGameMessage);
   window.addEventListener('message', onGameMessage);
 
-  // Write the HTML
   iframe.srcdoc = html;
   gameLoaded = true;
 
-  // Update UI
   setBadge('trial-status-badge', '● live', 'live');
   document.getElementById('inject-btn').style.display = '';
   document.getElementById('inject-btn').disabled = patches.length === 0;
@@ -765,10 +1017,12 @@ function launchTrial() {
   document.getElementById('trial-patch-badge').style.display = '';
   document.getElementById('trial-patch-badge').textContent = 'no patch injected';
   document.getElementById('trial-patch-badge').className = 'frame-badge';
+  document.getElementById('trial-source-badge').textContent = '📁 local';
+  document.getElementById('trial-source-badge').style.color = 'var(--mu2)';
 
-  addGameLog('info', '▶ Game trial launched — ' + Object.keys(gameFiles).length + ' files inlined');
   document.getElementById('inject-result').className = 'inject-result';
 
+  addGameLog('info', '▶ Game trial launched — ' + Object.keys(gameFiles).length + ' files inlined');
   toast('🌾 Game trial launched!');
 }
 
@@ -779,40 +1033,60 @@ function reloadTrial() {
 }
 
 /* ═══════════════════════════════════════════
-   PATCH INJECTION INTO LIVE GAME
+   PATCH INJECTION — MERGED ONLY + EXTRA PATCHES
 ═══════════════════════════════════════════ */
 function injectPatch() {
   const iframe = document.getElementById('game-frame');
   if (!iframe) { toast('Launch the trial first', 1); return; }
+  if (gameSource === 'live') { toast('Injection not available for live version', 1); return; }
   if (!patches.length) { toast('No patches loaded', 1); return; }
-  if (!lastMerged) lastMerged = buildMerged();
 
-  const pList = patches.map(p => ({ name: p.name, code: p.raw }));
+  // Build merged output
+  lastMerged = buildMerged();
 
-  iframe.contentWindow.postMessage({ type: 'inject-patch', patches: pList }, '*');
+  // Build injection set: merged patch + enabled extra patches
+  const toInject = [];
+
+  // The merged patch as one bundle
+  const mergedId = 'merged-' + Date.now();
+  toInject.push({
+    id: mergedId,
+    name: (document.getElementById('fn').value.trim()||'update').replace(/\.js$/, '') + '.js (merged)',
+    code: lastMerged,
+    type: 'merged'
+  });
+
+  // Extra game patches
+  extraGamePatches.forEach(p => {
+    toInject.push({ id: p.id, name: p.name, code: p.raw, type: 'extra' });
+  });
+
+  // Set up toggle states (all on by default)
+  injectedSet = toInject;
+  toInject.forEach(p => { patchToggles[p.id] = true; });
+
+  // Send to iframe
+  const payload = toInject.map(p => ({ name: p.name, code: p.code }));
+  iframe.contentWindow.postMessage({ type: 'inject-patch', patches: payload }, '*');
+
   setBadge('trial-patch-badge', '⚡ injecting…', '');
-  addGameLog('patch', '⚡ Injecting ' + patches.length + ' patch' + (patches.length>1?'es':'') + '…');
+  addGameLog('patch', `⚡ Injecting merged patch + ${extraGamePatches.length} extra patch${extraGamePatches.length!==1?'es':''}…`);
 }
 
 function onGameMessage(e) {
   if (!e.data) return;
-  if (e.data.type === 'game-log') {
-    addGameLog(e.data.level, e.data.msg);
-  }
-  if (e.data.type === 'patch-results') {
-    handlePatchResults(e.data.results);
-  }
+  if (e.data.type === 'game-log') addGameLog(e.data.level, e.data.msg);
+  if (e.data.type === 'patch-results') handlePatchResults(e.data.results);
 }
 
 function handlePatchResults(results) {
   const pass = results.filter(r=>r.ok).length;
   const fail = results.filter(r=>!r.ok).length;
   const total = results.length;
-
   const ir = document.getElementById('inject-result');
 
   if (fail === 0) {
-    setBadge('trial-patch-badge', `✓ ${total} patch${total>1?'es':''} active`, 'live');
+    setBadge('trial-patch-badge', `✓ ${total} active`, 'live');
     ir.textContent = `✓ All ${total} patch${total>1?'es':''} injected successfully — running live in game`;
     ir.className = 'inject-result show ok';
     toast('✓ All patches injected!');
@@ -824,12 +1098,69 @@ function handlePatchResults(results) {
   }
 
   results.forEach(r => {
-    const p = patches.find(x=>x.name===r.name);
-    if (p) p.testStatus = r.ok ? 'pass' : 'fail';
     addGameLog(r.ok ? 'patch' : 'error',
       (r.ok ? '✅ ' : '❌ ') + r.name + ' — ' + (r.ok ? r.ms+'ms' : r.err));
   });
-  renderPatches();
+
+  // Show toggle panel
+  renderTogglePanel();
+}
+
+/* ═══════════════════════════════════════════
+   PATCH TOGGLE PANEL
+═══════════════════════════════════════════ */
+function renderTogglePanel() {
+  const wrap = document.getElementById('ptoggle-wrap');
+  const list = document.getElementById('ptoggle-list');
+  if (!injectedSet.length) { wrap.style.display = 'none'; return; }
+
+  wrap.style.display = '';
+  const activeCount = injectedSet.filter(p => patchToggles[p.id]).length;
+
+  list.innerHTML = injectedSet.map(p => {
+    const on = patchToggles[p.id];
+    const isMerged = p.type === 'merged';
+    const bytes = new TextEncoder().encode(p.code).length;
+    const sz = bytes < 1024 ? bytes+'B' : (bytes/1024).toFixed(1)+'KB';
+    return `<div class="ptoggle-item ${isMerged?'pt-merged':'pt-extra'} ${on?'':'pt-off'}" id="ptitem-${p.id}">
+      <div class="ptoggle-left">
+        <div class="ptoggle-name">${esc(p.name)}</div>
+        <div class="ptoggle-sub">${sz} · ${isMerged ? patches.length+' source patch'+(patches.length!==1?'es':'') : 'extra game patch'}</div>
+      </div>
+      <div class="ptoggle-badge ${isMerged?'pt-badge-merged':'pt-badge-extra'}">${isMerged?'merged':'extra'}</div>
+      <div class="tsw ${on?'on':''}" onclick="togglePatch('${p.id}')" title="${on?'Click to disable':'Click to enable'}">
+        <div class="tsw-track"></div>
+        <div class="tsw-thumb"></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('ptoggle-status').textContent =
+    `${activeCount} of ${injectedSet.length} active · reload to apply changes`;
+  document.getElementById('reinject-btn').disabled = activeCount === 0;
+}
+
+function togglePatch(id) {
+  patchToggles[id] = !patchToggles[id];
+  renderTogglePanel();
+}
+
+function reinjectActive() {
+  const enabled = injectedSet.filter(p => patchToggles[p.id]);
+  if (!enabled.length) { toast('No patches enabled', 1); return; }
+
+  // Schedule inject after reload
+  pendingInject = enabled.map(p => ({ name: p.name, code: p.code }));
+
+  addGameLog('info', `↺ Reloading for reinject of ${enabled.length} active patch${enabled.length!==1?'es':''}…`);
+  launchTrial();
+
+  // Update badge
+  setTimeout(() => {
+    const activeNames = enabled.map(p => p.name).join(', ');
+    setBadge('trial-patch-badge', `⟳ ${enabled.length} pending`, '');
+    document.getElementById('ptoggle-status').textContent = `Reinjecting ${enabled.length} active patches…`;
+  }, 100);
 }
 
 /* ═══════════════════════════════════════════
@@ -841,7 +1172,6 @@ function addGameLog(level, msg) {
   const now = new Date();
   const time = now.toTimeString().slice(0,8);
   gameLogs.push({ level, msg, time });
-  // Cap at 200 entries
   if (gameLogs.length > 200) gameLogs.shift();
 
   const count = document.getElementById('log-count');
@@ -873,11 +1203,12 @@ function clearGameLog() {
 ═══════════════════════════════════════════ */
 function setBadge(id, text, cls) {
   const el = document.getElementById(id);
+  if (!el) return;
   el.textContent = text;
   el.className = 'frame-badge' + (cls ? ' ' + cls : '');
 }
 
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 let _tt;
 function toast(msg, err) {
@@ -889,9 +1220,6 @@ function toast(msg, err) {
   clearTimeout(_tt);
   _tt = setTimeout(()=>t.classList.remove('on'), 2500);
 }
-
-// Keep inject button in sync with patches state
-const origRender = renderPatches;
 </script>
 </body>
 </html>
